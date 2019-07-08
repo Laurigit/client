@@ -15,7 +15,7 @@ turn_overwrite <- reactiveValues(enabled = FALSE, value = "")
 #one variable to hold keypad input.
 complex_input <- reactiveValues(value = "")
 #local variable to keep track turn and only write it once to file
-local_turn <- reactiveValues(value = 0) 
+local_turn <- reactiveValues(value = 0)
 
 
 
@@ -39,7 +39,7 @@ setActionButtonStatus <- function(Status, button) {
      isolate(print(paste0(button, " = ", actButtonStatus[[button]]," ", session$user)))
   }
 
-  
+
 }
 
 #one time init settings for UI
@@ -78,7 +78,7 @@ if ("Reverse Source" %in% listz) {
 } else {
   reverse_DMG_reacive$Reverse_DMG <- FALSE
 }
-  
+
 })
 #session <- NULL
 #session$user <- "Lauri"
@@ -124,7 +124,7 @@ observeEvent(input$Lose_8, {
 })
 
 observeEvent(input$Lose_9, {
-  updateTabsetPanel(session, "lifeBox", selected = "NinePlusPanel") 
+  updateTabsetPanel(session, "lifeBox", selected = "NinePlusPanel")
   amount_DMG_reactive$opp <- FALSE
 })
 
@@ -170,12 +170,12 @@ observeEvent(input$Deal_8, {
 })
 
 observeEvent(input$Deal_9, {
-  updateTabsetPanel(session, "lifeBox", selected = "NinePlusPanel") 
+  updateTabsetPanel(session, "lifeBox", selected = "NinePlusPanel")
   amount_DMG_reactive$opp <- TRUE
 })
 
 observeEvent(input$Edit_1, {
- 
+
   complex_input$value <- paste0(complex_input$value, "1")
 })
 
@@ -189,7 +189,7 @@ observeEvent(input$Edit_3, {
 
 observeEvent(input$Edit_4, {
    complex_input$value<- paste0(complex_input$value, "4")
-})  
+})
 
 observeEvent(input$Edit_5, {
    complex_input$value<- paste0(complex_input$value, "5")
@@ -230,13 +230,14 @@ observe({
       life_kerroin <- 1
     }
   )
-  
-  extract_pelidata <- isolate(eR_UID_UUSI_PELI())
-  
+
+  extract_pelidata <- isolate(eR_UID_UUSI_PELI())[Peli_ID == eR_Peli_ID()]
+
   #jos on menossa damagen erityisfiksaus, niin ota turni inputeista
   if (fix_life$enabled == TRUE) {
     #check who started
-    Aloittaja <- extract_pelidata[Aloittaja == 1, Omistaja_NM]
+    Aloittaja_all <- getAloittaja(ADM_PELIT, eR_Peli_ID())
+    Aloittaja <- Aloittaja_all$Aloittaja_NM
   #  print(session$user)
     if (Aloittaja == session$user) {
       I_start <- TRUE
@@ -267,8 +268,8 @@ observe({
   } else {
     turnValue <- isolate(turnData$turn)
   }
-  
-  
+
+
 
   #uuspeli <- data.table(Omistaja_NM = c("Lauri", "Martti"), Peli_ID_input = 1033)
   #testitulos <- mark_damage(3, "Lauri", 1, TRUE, "Lauri", 1, ADM_CURRENT_DMG, uuspeli)
@@ -282,19 +283,19 @@ observe({
                        input_UID_UUSI_PELI = extract_pelidata
   )
  # print(tulos)
- 
+
  isolate(amount_DMG_reactive$dmg <- NULL)
 
- 
+
 # print(input$dmg_settings)
   damage_data$data <- tulos
   js$beep()
 
- 
+
 })
 
 
-#observeEvent damage_data$data 
+#observeEvent damage_data$data
 #handles changed in damagedate
 observe({
   #jos muuttuu, niin validoi ja kirjota, jos validi
@@ -303,24 +304,25 @@ observe({
   # print(templife)
   #validate input
   if(templife$count_missing_rows == 0){
-  
+
     print("kirjotetaan csv")
     print(damage_data$data)
     #write to csv
-    write.table(x = damage_data$data,
-                file = paste0("./dmg_turn_files/", "current_dmg.csv"),
-                sep = ";",
-                row.names = FALSE,
-                dec = ",")
+    wc(damage_data$data, folder = "../common_data/", "current_dmg")
+    # write.table(x = damage_data$data,
+    #             file = paste0("./dmg_turn_files/", "current_dmg.csv"),
+    #             sep = ";",
+    #             row.names = FALSE,
+    #             dec = ",")
     required_data("ADM_DI_HIERARKIA")
     updateData("SRC_CURRENT_DMG", ADM_DI_HIERARKIA, globalenv())
-    
-   
+
+
     life_totals$data <- templife
     input_error$error <- FALSE
     waiting_opponent_input$waiting <- FALSE
     opponent_waiting_my_input$waiting <- FALSE
-    updateTabsetPanel(session, "lifeBox", selected = "life_input") 
+    updateTabsetPanel(session, "lifeBox", selected = "life_input")
   } else if (templife$count_missing_rows == 2) {
     #error
     #show both players input and let them choose the correct.
@@ -328,7 +330,7 @@ observe({
     message("input error",  input_error$error)
     waiting_opponent_input$waiting <- FALSE
     opponent_waiting_my_input$waiting <- FALSE
-    
+
   } else if (tail(damage_data$data, 1)[, Input_Omistaja_NM] == session$user ) {
     #if I did the input, then I am waiting opponent
     waiting_opponent_input$waiting <- TRUE
@@ -345,7 +347,7 @@ observe({
     print("käytiin debugissa, missä kojrattiin tilanne, että oli 3 tai enemmän hyväksymätöntä damageinputtia")
 
   }
-  
+
 
 })
 
@@ -363,11 +365,11 @@ observe({
   #  print("choose_input")
   # print(choose_input)
 
-    lifetdata <- calc_life_totals(isolate(damage_data$data)) 
+    lifetdata <- calc_life_totals(isolate(damage_data$data))
     accRows <- lifetdata$accepted_rows
-    damage_data$data <- accRows 
+    damage_data$data <- accRows
     input_error$error <- FALSE
-    
+
     js$toot()
        shinyalert(
                  title = "Difference in damage input",
@@ -379,9 +381,9 @@ observe({
                  showConfirmButton = TRUE,
                   confirmButtonText = "Ok, we will both input again!")
     }
-    
+
     #updateTabsetPanel(session, "lifeBox", selected = "dmg_rows_panel")
-  
+
     #print(damage_data_for_observe)
    # print(input_error_response$response)
   #   shinyalert(callbackR = function(x) {
@@ -400,16 +402,16 @@ observe({
    }
  # print( input_error_response$response)
 })
-               
- 
+
+
     #tää jäi loooppiin, pitäs ehkä siirtää niin, että input$shiny alert on omassa observessa ja se muuttaa input_errorresponsen arvoja
     #print( input_error_response$response )
   observe({
     req(input_error_response$response)
     damage_data_for_observe <- isolate(damage_data$data)[DID > 0]
- 
-    
-    
+
+
+
                  if (nrow(input_error_response$response) == 2) {
                    if (input_error_response$response[1, response] != input_error_response$response[2, response]
                        ) {
@@ -417,7 +419,7 @@ observe({
                      #case inputit meni oikein eli oltiin samaa mieltä virheestä
                      ##tallenna valittu inputti
                      ###tuhoa oma viimeisin ja lisää sinne vihun asetukset omalla inputilla
-                     
+
                      my_response <- input_error_response$response[user  == session$user, response]
                      if (my_response == TRUE) {
                      #  "Accept opponent input"
@@ -430,24 +432,24 @@ observe({
                        row_to_copy[, ':=' (Input_Omistaja_NM = session$user,
                                            DID = max(DID) + 1)]
                        damage_data$data <- rbind(damage_undone, row_to_copy)
-                       
+
                      }
                      #debug
                      #input_error_response <- NULL
                      #input_error_response$response <- data.table(user = c("Lauri", "Martti"), response = c(TRUE, FALSE))
-                    
+
                      # tuhottava <- damage_data_for_observe[Input_Omistaja_NM ==
                      #                    input_error_response$response[response ==
                      #                                                    FALSE,
                      #                                                  user], .(DID = max(DID)), by = .(Input_Omistaja_NM)]
                      # message("Tuhottava rivi", tuhottava)
 
-                     
+
                      # print(data_mihin_lisatty)
                      # life_totals$data <- calc_life_totals(data_mihin_lisatty)
-                     
+
                    } else {
-                   
+
                      #case inputit meni väärin
                      #tuhoa oma viimeisin input ja ilmoita pelaajalle
                    #  print("elsen puolella")
@@ -468,17 +470,17 @@ observe({
                                 cancelButtonText = "He's a drunk idiot")
                    }
                    #when second user confirms, delete global var row
-                 
+
                    if (input_error_response$response[1, done ] == FALSE) {
                       isolate(input_error_response$response[1, done := TRUE ])
                    } else {
                      input_error_response$response <- NULL
                    }
                  }
-  
-  
+
+
 })
-# 
+#
 # output$debug_text <- renderText({
 #  resp <-  paste0("input_error_response: ", input_error$response, "\n",
 #          "waiting_opponent_input: ", waiting_opponent_input$waiting, "\n",
@@ -490,17 +492,17 @@ observe({
 #          )
 #  print(resp)
 #  return(resp)
-# 
+#
 # })
 
 
 
-  
-  
-  
+
+
+
 observe({
   if (waiting_opponent_input$waiting  == FALSE) {
-    updateTabsetPanel(session, "lifeBox", selected = "life_input") 
+    updateTabsetPanel(session, "lifeBox", selected = "life_input")
   }
 })
 
@@ -509,8 +511,8 @@ observe({
 
 output$life_total_row <- renderUI({
   req(life_totals$data)
-  
-  
+
+
  # print(session$user)
 # print(life_totals$data)
   lifedata <- life_totals$data$Lifetotal
@@ -526,9 +528,9 @@ output$life_total_row <- renderUI({
                       )
                  ),
            column(4,
-                  
-                 
-            #  height: 100%;  background-color: #000080;  
+
+
+            #  height: 100%;  background-color: #000080;
            # column(4,
                   actionButton("ab_pakita_endille", HTML("Reject turn, <br> go to end step"),
                                width = '100%', style='font-size:150%;
@@ -547,8 +549,8 @@ output$life_total_row <- renderUI({
                  )
             )
            )
-  
-    
+
+
                  # valueBox( lifedata[Omistaja_NM == session$user, Life_total], lifetext, icon = NULL, color = "aqua", width = 12)),
           # column(5, offset = 2,
            #       valueBox( lifedata[Omistaja_NM != session$user, Life_total], lifetext, icon = NULL, color = "aqua", width = 12)))
@@ -565,58 +567,58 @@ output$dynamic_turn_box <- renderUI({
       Aloittaja <- "M"
       Nostaja <- "L"
     }
-    
+
     if (ADM_TURN_SEQ[TSID == turnData$turn, Starters_turn] == TRUE) {
       pelaaja_vuorossa <- Aloittaja
     } else {
       pelaaja_vuorossa <- Nostaja
     }
-    
-    
+
+
     vuoroTeksti <- paste0(pelaaja_vuorossa, " ", vuorotekstiAlku)
   } else {
     vuoroTeksti <- "Not started"
   }
-  
+
   box(HTML(paste0('<div align="center"><font size="7" color="white"> <b>',
                   vuoroTeksti,
                   '</b></font></div>')),
       background = "maroon",
       width = "100%")
-  
+
 })
 
 
 # output$pass_turn_row <- renderUI({
-# 
-#   
+#
+#
 #   fluidRow(
-# 
+#
 #     column(4,
-# 
+#
 #              actionButton(inputId = "ab_Vaihda_vuoro_virhe",
 #                           label = HTML("End turn <br> add mistake"),
 #                           style = "font-size:150%; color: #fff; background-color: #000080; border-color: #2e6da4; height: 87px;",
 #                           width = '100%')
 #            ),
-#    
-# 
-#              
+#
+#
+#
 #            )
 #     )
 #   )
-#   
+#
 # })
 
 observeEvent(input$ab_Vaihda_vuoro, {
   js$no()
   turnData$turn <- ADM_TURN_SEQ[TSID == turnData$turn, Next_turn_TSID]
-  local_turn$value <- local_turn$value + 1 
+  local_turn$value <- local_turn$value + 1
 })
 
 observeEvent(input$ab_pakita_endille, {
   turnData$turn <- turnData$turn - 1
-  local_turn$value <- local_turn$value + 1 
+  local_turn$value <- local_turn$value + 1
 
 })
 
@@ -626,9 +628,8 @@ observe({
   required_data("ADM_CURRENT_TURN")
 take_dep <-  local_turn$value
 print("writing to turn csv")
-  peli_id_data <- isolate(eR_UID_UUSI_PELI())
   new_row <- data.table(TSID = isolate(turnData$turn),
-                        Peli_ID = peli_id_data[, max(Peli_ID_input)],
+                        Peli_ID = eR_Peli_ID(),
                         time_stamp =  as.character(now(tz = "EET")))
 
   #  print(str(new_row))
@@ -637,11 +638,12 @@ print("writing to turn csv")
     #print(rbind(ADM_CURRENT_TURN, new_row))
     #print("done")
   new_data <- rbind(ADM_CURRENT_TURN, new_row)
-  write.table(x = new_data,
-              file = paste0("./dmg_turn_files/", "current_turn.csv"),
-              sep = ";",
-              row.names = FALSE,
-              dec = ",")
+  wc(new_data, "../common_data/", "current_turn")
+  # write.table(x = new_data,
+  #             file = paste0("./dmg_turn_files/", "current_turn.csv"),
+  #             sep = ";",
+  #             row.names = FALSE,
+  #             dec = ",")
   required_data("ADM_DI_HIERARKIA")
   updateData("SRC_CURRENT_TURN", ADM_DI_HIERARKIA, globalenv())
 
@@ -656,13 +658,13 @@ if(turnData$turn > 0) {
   print("turndata$turn")
   print(turnData$turn)
   if (waiting_opponent_input$waiting == TRUE) {
-    updateTabsetPanel(session, "lifeBox", selected = "waiting_panel") 
+    updateTabsetPanel(session, "lifeBox", selected = "waiting_panel")
     setActionButtonStatus("disable", "ab_Vaihda_vuoro")
     setActionButtonStatus("disable", "ab_pakita_endille")
   #  shinyjs::disable("ab_Vaihda_vuoro_virhe")
   } else {
-    peli_id_data <- isolate(eR_UID_UUSI_PELI())
-    Aloittaja <- peli_id_data[Aloittaja == 1, Omistaja_NM]
+     Aloittaja_all <- getAloittaja(ADM_PELIT, eR_Peli_ID())
+     Aloittaja <- Aloittaja_all$Aloittaja_NM
     if (Aloittaja == session$user) {
       I_start <- TRUE
     } else {
@@ -683,7 +685,7 @@ if(turnData$turn > 0) {
     setActionButtonStatus("enable", "ab_Vaihda_vuoro")
  #   shinyjs::enable("ab_Vaihda_vuoro_virhe")
     setActionButtonStatus("disable", "ab_pakita_endille")
-    
+
   } else {
     print("ELSE")
     setActionButtonStatus("disable", "ab_Vaihda_vuoro")
@@ -711,7 +713,7 @@ if(turnData$turn > 0) {
 
    # print(aggr_dmg)
     #combat damage non lifegain rows
-   
+
     cmbt_damage_rows <- aggr_dmg[rivit > 1 & TSID == get_current_turn_TSID & Combat_dmg == 1]
 
    # print(cmbt_damage_rows)
@@ -721,7 +723,7 @@ if(turnData$turn > 0) {
       cmbt_dmg_done <- FALSE
     }
     if (cmbt_dmg_done == TRUE) {
-    
+
     updateCheckboxGroupButtons(session,
                                "dmg_settings",
                                selected = c("Non-combat damage"))
@@ -731,10 +733,10 @@ if(turnData$turn > 0) {
                                  selected = c(""))
     }
   }
-  
-  
-  
-  
+
+
+
+
   }
   }
 }, priority = -10)
@@ -757,12 +759,12 @@ observeEvent(input$ab_Vaihda_vuoro_virhe, {
 })
 
 observeEvent(input$save_9_damage, {
-  
+
   amount_DMG_reactive$dmg <- as.numeric(inputLife$amount)
   complex_input$value <- ""
   inputLife$amount <- ""
-  
-              
+
+
 })
 output$value_type_life <- renderUI({
   inputValue <- inputLife$amount
@@ -773,13 +775,13 @@ output$value_type_life <- renderUI({
     turnValue <- ADM_TURN_SEQ[TSID == turnData$turn, Turn]
   }
 
-Tot_text <- HTML(paste0('<font size="3"', inputValue, ' T:', turnValue, '</font>'))  
+Tot_text <- HTML(paste0('<font size="3"', inputValue, ' T:', turnValue, '</font>'))
 Tot_text <- HTML(paste0('<div align="center"><font size="6" color="white"> <b>',
                         inputValue, ' T:', turnValue,
                   '</b></font></div>'))
 #Tot_text <- "test"
 #TurnText <- paste0("Turn: ", turnValue)
-  
+
   box(Tot_text,
           # subtitle = NULL,
            background = "aqua",
@@ -787,9 +789,9 @@ Tot_text <- HTML(paste0('<div align="center"><font size="6" color="white"> <b>',
       height = "60px",
       collapsible = FALSE)
 })
- 
+
 output$damage_rows_dt <- renderDataTable({
- 
+
 #  required_data("ADM_CURRENT_DMG")
   damage_data$data[, .N, by = .(Amount,
                        Target_player,
@@ -810,7 +812,7 @@ rownames = FALSE
 observeEvent(input$Delete_dmg_row,{
   required_functions("delete_damage")
   #times too as the visible data has been aggregated
-  damage_data$data <- delete_damage(input$damage_rows_dt_rows_selected * 2, 
+  damage_data$data <- delete_damage(input$damage_rows_dt_rows_selected * 2,
                                     damage_data$data)
 })
 
@@ -824,11 +826,11 @@ observeEvent(input$ab_fix_lifes, {
   updateRadioGroupButtons(session,
                           inputId = "isMyTurn",
                           selected = TRUE)
-  
+
   updateRadioGroupButtons(session,
                           inputId = "isEndStep",
                           selected = FALSE)
-  
+
     updateRadioGroupButtons(session,
                           inputId = "editTurnOrLife",
                           selected = "Turn")
@@ -840,7 +842,7 @@ observe({
   if (complex_input$value == "") {
     use_value <- 0
   } else {
-    use_value <- complex_input$value 
+    use_value <- complex_input$value
   }
   if (isolate(input$editTurnOrLife == "Turn")) {
  #   print("write turns")
@@ -849,20 +851,20 @@ observe({
 #    print("write life")
    inputLife$amount <-   use_value
   }
-  
+
 })
-# 
-#   
+#
+#
 #   input$isEndStep
 #   input$isMyTurn
-#   
-#   turn_overwrite$enabled <- 
+#
+#   turn_overwrite$enabled <-
 
- 
+
 
 observeEvent(input$editTurnOrLife, {
 
- 
+
   if (input$editTurnOrLife == "Turn") {
     turn_overwrite$enabled <- TRUE
     isolate(complex_input$value <- turn_overwrite$value )
@@ -882,7 +884,7 @@ observeEvent(input$editTurnOrLife, {
 ###########################
 
 output$lifeChart <- renderPlot({
-  required_data(c("ADM_TURN_SEQ", "ADM_CURRENT_DMG")) 
+  required_data(c("ADM_TURN_SEQ", "ADM_CURRENT_DMG"))
   graphInput <- isolate(damage_data$data)
   # session <- NULL
   # session$user <- "Lauri"
@@ -920,11 +922,11 @@ join_tse[, Target_Player_Turn := (Target_player == Aloittaja) == Starters_turn]
 aggr_dmg <- join_tse[, .(Amount = sum(Amount, na.rm =TRUE), TSID = min(TSID)
 ),
 by = .(
-  
+
   Target_player,
   # Dmg_source,
   # Combat_damage,
-  
+
   Turn,
   Target_Player_Turn,Starters_turn)]
 aggr_dmg[, lifegain := ifelse(Amount < 0, TRUE, FALSE)]
@@ -958,9 +960,9 @@ plot_xmax <- aggr_dmg_me[, max(half_turn)]
 plot_ymin <- min(aggr_dmg_opponent[, min(-ymax)], -20)
 
 
-# fill=paste0(Starters_turn, "-") sen takia, että muuten TRUE ja FALSE mäppääytyy samaks väriks. 
-aggr_dmg_me %>% 
-  arrange(half_turn) %>% 
+# fill=paste0(Starters_turn, "-") sen takia, että muuten TRUE ja FALSE mäppääytyy samaks väriks.
+aggr_dmg_me %>%
+  arrange(half_turn) %>%
   ggplot() +
   geom_rect(aes(ymin=plot_ymin, ymax=plot_ymax, xmin=xmin,
                                     xmax=xmax, fill=paste0(Starters_turn, "-")), alpha =0.3) +# scale_fill_manual(values = c("red", "green4",  "white", "blue"))+
@@ -972,8 +974,8 @@ aggr_dmg_me %>%
   scale_y_continuous(expand = c(0, 0),
                      limits = c(plot_ymin, plot_ymax),
                      breaks = c(seq(0, plot_ymin, by = -5), seq(0, plot_ymax, by = 5)),
-                     minor_breaks = NULL) +#c(seq(0, plot_ymin, by = -1), seq(0, plot_ymax, by = 1))) +   
-  scale_x_continuous(expand = c(0, 0), limits = c(1, plot_xmax) , breaks = seq(1:plot_xmax)) + 
+                     minor_breaks = NULL) +#c(seq(0, plot_ymin, by = -1), seq(0, plot_ymax, by = 1))) +
+  scale_x_continuous(expand = c(0, 0), limits = c(1, plot_xmax) , breaks = seq(1:plot_xmax)) +
   # theme(panel.grid.major = element_line(color = "red")) +
   # ylim(min = 0, max = 20) +
   # geom_segment(aes(x = xArrow, y = ymax, xend = xArrow, yend = ymin),
@@ -992,9 +994,9 @@ p3 <- p1 +  geom_hline(yintercept = 0) +
                                           fill =  factor(lifegain)), show.legend = FALSE) + scale_fill_manual(values = colors) +
   geom_line(data = aggr_dmg_opponent, aes(half_turn, (-cum_life_start_of_turn)), col = "dodgerblue4", size = 1) +
    theme(legend.position = "none") +
- guides(fill=FALSE) + 
-  theme(axis.title.x=element_blank()) + 
-theme(axis.title.y=element_blank()) 
+ guides(fill=FALSE) +
+  theme(axis.title.x=element_blank()) +
+theme(axis.title.y=element_blank())
 p3
 
 
@@ -1007,34 +1009,34 @@ observe({
  # life_totals$data <- calc_life_totals(ADM_CURRENT_DMG)
   required_data("ADM_TURN_SEQ")
   minLife <- life_totals$data$Lifetotal[, min(Life_total)]
-  
+
   if (minLife <= 0) {
     aloittajaNo <- isolate(eR_Peli_Aloittaja$a)
-  
+
     if (aloittajaNo == 0) {
       mulligan_lkm  <- isolate(input$slider_laurin_mulligan)
       # print(paste0(input$slider_vuoroarvio, " + ", input$slider_laurin_mulligan, " - 6 = ", vuoroarviolasku))
-      
+
     } else {
       mulligan_lkm  <- isolate(input$slider_martin_mulligan)
       # print(paste0(input$slider_vuoroarvio, " + ", input$slider_martin_mulligan, " - 6 = ", vuoroarviolasku))
     }
-    
+
 
     print("turn")
     print(isolate(turnData$turn))
     print("mulligan")
     print(mulligan_lkm)
-    
+
     update_value <- ADM_TURN_SEQ[TSID == isolate(turnData$turn), Turn] + 6 - mulligan_lkm
 
-    
+
     print("peli tallentuu, mika arvo")
     isolate(print(slider_vuoroarvio$value))
     slider_laurin_lifet$value <- life_totals$data$Lifetotal[Omistaja_NM == "Lauri", Life_total]
     slider_martin_lifet$value <-   life_totals$data$Lifetotal[Omistaja_NM == "Martti", Life_total]
     if (life_totals$data$Lifetotal[which.min(Life_total), Omistaja_NM] == "Lauri") {
-   
+
       click("martti_voitti")
       slider_vuoroarvio$value <- update_value
       updateSliderInput(session,

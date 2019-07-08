@@ -1,5 +1,5 @@
 #options are prod, test, dev
-options(shiny.trace = TRUE)
+options(shiny.trace = FALSE)
 GLOBAL_test_mode <- "prod"
 options(shiny.fullstacktrace = FALSE)
 if(!GLOBAL_test_mode %in% c("test", "prod", "dev")) {
@@ -57,7 +57,7 @@ library(beepr)
 #library(shinythemes)
 #options(shiny.error=browser)
 options(max.print=1000000)
-options(DT.fillContainer = FALSE) 
+options(DT.fillContainer = FALSE)
 options(DT.autoHideNavigation = FALSE)
 Sys.setenv(TZ='EET')
 #setwd("C:/Users/laurilepisto/Documents/R/shiny/r2")
@@ -75,7 +75,7 @@ token <- readRDS("droptoken.rds")
 #download_folder <- "./drop_download/"
 #drop_box_folder <- "mstat/all_data/"
 load_data_from_DB <- function() {
-  download_from_DropBox <- TRUE
+  download_from_DropBox <- FALSE
   drop_box_folder <- "mstat/all_data/"
   download_folder <- "./download_folder/"
   if (exists("GLOBAL_test_mode")) {
@@ -85,21 +85,21 @@ load_data_from_DB <- function() {
       drop_box_folder <- "mstat/all_data_test_download/"
     }
   }
-  
+
   #delete prev decks in case of testing
-  do.call(file.remove, list(list.files("./external_files", full.names = TRUE)))
+  #do.call(file.remove, list(list.files("./external_files", full.names = TRUE)))
   if (download_from_DropBox == TRUE) {
-   
-    
+
+
     drop_download(path = paste0(drop_box_folder,"all_files.zip"),
                   local_path = download_folder,
                   overwrite = TRUE,
                   dtoken = token)
   } else {
-    file.copy("./upload_folder/all_files.zip", to = "./download_folder", overwrite = TRUE)
+    #file.copy("./upload_folder/all_files.zip", to = "./download_folder", overwrite = TRUE)
   }
-  unzip(zipfile = paste0(download_folder, "all_files.zip"),
-        exdir = "./external_files")
+ # unzip(zipfile = paste0(download_folder, "all_files.zip"),
+  #      exdir = "./external_files")
 }
 
 
@@ -108,27 +108,27 @@ load_data_from_DB <- function() {
 kircsv <- function(datataulu, tiedostonimi, upload = TRUE) {
 
 #  con <- connDB(con)
-  
-  
-  
+
+
+
   write.table(x = datataulu,
               file = paste0("./external_files/", tiedostonimi),
               sep = ";",
               row.names = FALSE,
 
               dec = ",")
-  
+
   if (upload == TRUE) {
        zip_all_and_send()
   }
 }
 
 zip_all_and_send <- function() {
-  
+
     tiedostot <- as.data.table(dir(path = "./external_files/"))
     file.remove("./upload_folder/all_files.zip")
     setwd("./external_files")
-    
+
     zip(zipfile = "../upload_folder/all_files.zip",
         files = tiedostot[,V1],  flags="-q")
     setwd("..")
@@ -142,14 +142,14 @@ zip_all_and_send <- function() {
       }
     }
     if (test_mode == "prod") {
-      drop_upload("./upload_folder/all_files.zip", upload_dir, mode = "overwrite", dtoken = token)
+  #    drop_upload("./upload_folder/all_files.zip", upload_dir, mode = "overwrite", dtoken = token)
     }
-  
+
 }
 
 
 saveR_and_send <- function(rdatasetti,RdataTallenna,RdataTiedostonimi){
-  
+
   assign(RdataTallenna,rdatasetti)
   #print(get(RdataTallenna))
  # print("ladattu")

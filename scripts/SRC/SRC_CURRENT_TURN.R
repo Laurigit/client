@@ -1,17 +1,17 @@
 #SRC_CURRENT_TURN
-if(!file.exists("./dmg_turn_files/current_turn.csv")) {
- 
+if(!file.exists("../common_data/current_turn.csv")) {
+
   res_table <- data.table(TSID = 0,
                                Peli_ID =0,
                                time_stamp = as.character(now(tz = "EET")))
-  
+
   write.table(x = res_table,
-              file = paste0("./dmg_turn_files/", "current_turn.csv"),
+              file = paste0("../common_data/", "current_turn.csv"),
               sep = ";",
               row.names = FALSE,
               dec = ",")
 } else {
-  res_table <- as.data.table(read.csv(paste0("./dmg_turn_files/", "current_turn.csv"),
+  res_table <- as.data.table(read.csv(paste0("../common_data/", "current_turn.csv"),
                                   sep = ";",
                                   stringsAsFactors = FALSE,
                                   dec = ",",

@@ -1,6 +1,6 @@
 #tallennapeli
 #input_Peli_ID <-909
-# 
+#
 # Aloitusaika <-1
 # Aloituspvm<-1
 # Lopetus_DT = now(tz = "EET")
@@ -16,7 +16,7 @@
 # Vuoroarvio<-1
 # Laurin_kasikortit<-1
 # Martin_kasikortit<-1
-# 
+#
 
 #required_data("ADM_TEMP_DATA_STORAGE")
 #tempData <- ADM_TEMP_DATA_STORAGE
@@ -28,8 +28,8 @@ observeEvent(input$tallenna_tulos, {
  shinyjs::disable("tallenna_tulos")
   input_Peli_ID <- eR_Peli_ID()
   #vuoroarviolasku
-required_data(c("ADM_PELIT", "ADM_TEMP_DATA_STORAGE", "ADM_CURRENT_TURN", "ADM_CURRENT_DMG" ))
-tempData <- ADM_TEMP_DATA_STORAGE 
+required_data(c("ADM_TEMP_DATA_STORAGE", "ADM_CURRENT_TURN", "ADM_CURRENT_DMG" ))
+tempData <- ADM_TEMP_DATA_STORAGE
 aloittajaNo <- eR_Peli_Aloittaja$a
   if(aloittajaNo == 0) {
     vuoroarviolasku <- input$slider_vuoroarvio + input$slider_laurin_mulligan - 6
@@ -64,70 +64,50 @@ aloittajaNo <- eR_Peli_Aloittaja$a
   )
 
   #tyhjennä tempdata
+  wc(uusrivi, "../common_data/", paste0("Result_", input_Peli_ID))
 
 
-  kaikkipelit<-data.table(luecsv("pelit.csv"))
-  cols<-names(kaikkipelit) 
 
-  kaikkipelit[, (cols):= lapply(.SD, as.character), .SDcols=cols]
-
-  kaikkipelit[peli_ID==input_Peli_ID, names(uusrivi) := as.list(uusrivi)]
-
-   #jos bo_mode on päällä, niin tuhoa ylijäämäpelit
-  #laske otteluiden voittoprosentti
-  colsBackToNum <- c("Lauri_voitti", "Martti_voitti", "BO_mode", "Voittaja")
-  kaikkipelit[, (colsBackToNum):= lapply(.SD, as.numeric), .SDcols=colsBackToNum]
-  kaikkipelit[,':=' (MaxVP=pmax(sum(Lauri_voitti,na.rm=TRUE)/.N,sum(Martti_voitti,na.rm=TRUE)/.N)),by=Ottelu_ID]
-  kaikkipelit[,MaxVP:=ifelse(is.na(MaxVP),0,MaxVP)]
-  
-  #jätä rivit, joiden MaxVP<0.5 tai rivillä on voittaja tai BO_mode on pois päältä
-  pelit_jaljella <- kaikkipelit[(!is.na(Voittaja) | MaxVP <= 0.5) | BO_mode == 0]
-  pelit_jaljella[,':='(MaxVP = NULL)]
-  
-  kircsv(pelit_jaljella,"pelit.csv", TRUE)
-  
-  
-  
-  # updateSliderInput(session, "slider_laurin_mulligan",  value = 0) 
+  # updateSliderInput(session, "slider_laurin_mulligan",  value = 0)
   slider_laurin_mulligan$value <- 0
-  # updateSliderInput(session, "slider_martin_mulligan",  value = 0) 
+  # updateSliderInput(session, "slider_martin_mulligan",  value = 0)
   slider_martin_mulligan$value <- 0
-  # updateSliderInput(session, "slider_laurin_virhe",  value = 1) 
+  # updateSliderInput(session, "slider_laurin_virhe",  value = 1)
   slider_laurin_virhe$value <- 1
-  #  updateSliderInput(session, "slider_martin_virhe",  value = 1) 
+  #  updateSliderInput(session, "slider_martin_virhe",  value = 1)
   slider_martin_virhe$value <- 1
-  # updateSliderInput(session, "slider_laurin_landit",  value = 0) 
+  # updateSliderInput(session, "slider_laurin_landit",  value = 0)
   slider_laurin_landit$value <- 0
-  #  updateSliderInput(session, "slider_martin_landit",  value = 0) 
+  #  updateSliderInput(session, "slider_martin_landit",  value = 0)
   slider_martin_landit$value <- 0
-  #  updateSliderInput(session, "slider_laurin_lifet",  value = 0) 
+  #  updateSliderInput(session, "slider_laurin_lifet",  value = 0)
   slider_laurin_lifet$value <- 0
   #  updateSliderInput(session, "slider_martin_lifet",  value = 0)
   slider_martin_lifet$value <- 0
-  # updateSliderInput(session, "slider_vuoroarvio",  value = 0) 
-  print("tallenna peli slidervuoroarvio")
+  # updateSliderInput(session, "slider_vuoroarvio",  value = 0)
+
   slider_vuoroarvio$value <- 4
-  print(slider_vuoroarvio$value)
-  #  updateSliderInput(session, "slider_laurin_kasikortit",  value = -1) 
+
+  #  updateSliderInput(session, "slider_laurin_kasikortit",  value = -1)
   slider_laurin_kasikortit$value <- -1
-  # updateSliderInput(session, "slider_martin_kasikorit",  value = -1) 
+  # updateSliderInput(session, "slider_martin_kasikorit",  value = -1)
   slider_martin_kasikorit$value <- -1
-# 
+#
 #   life_totals$data <-  calc_life_totals(ADM_CURRENT_DMG)
 #   damage_data$data <- ADM_CURRENT_DMG
 #   turnData$turn <- 1
-#   
+#
 
 
-  
+
 
   #lifecoutnteri-nollaukset ja tallennukset
-  #ota talteen vuorotiedosto ja 
-  new_name <- paste0("./external_files/dmg_", eR_Peli_ID(), ".csv")
-  file.copy(from = "./dmg_turn_files/current_dmg.csv",
+  #ota talteen vuorotiedosto ja
+  new_name <- paste0("../common_data/dmg_", eR_Peli_ID(), ".csv")
+  file.copy(from = "../common_data/current_dmg.csv",
             to = new_name)
-  new_name2 <- paste0("./external_files/turn_", eR_Peli_ID(), ".csv")
-  file.copy(from = "./dmg_turn_files/current_turn.csv",
+  new_name2 <- paste0("../common_data/turn_", eR_Peli_ID(), ".csv")
+  file.copy(from = "../common_data/current_turn.csv",
             to = new_name2)
   #tun once for each players.
   tallenna_tulos_ui_update$value <-  2
@@ -139,12 +119,10 @@ observe({
   print("tallenna_tulos_ui_update$value")
   print(tallenna_tulos_ui_update$value)
  if( tallenna_tulos_ui_update$value > 0 ) {
-  
+
   #do once
   if(tallenna_tulos_ui_update$value == 1) {
-  required_data("ADM_DI_HIERARKIA")
-  updateData("SRC_PELIT", ADM_DI_HIERARKIA, input_env = globalenv())
-  
+
   required_data(c("ADM_CURRENT_TURN", "ADM_CURRENT_TURN"))
   write.table(x = ADM_CURRENT_DMG[1 == 0],
               file = paste0("./dmg_turn_files/", "current_dmg.csv"),
@@ -156,7 +134,7 @@ observe({
               sep = ";",
               row.names = FALSE,
               dec = ",")
-  
+
   required_data("ADM_DI_HIERARKIA")
   updateData("SRC_CURRENT_DMG", ADM_DI_HIERARKIA, globalenv())
   updateData("SRC_CURRENT_TURN", ADM_DI_HIERARKIA, globalenv())
@@ -164,7 +142,7 @@ observe({
   }
   if (session$user != "overlay") {
   updateTabItems(session,"sidebarmenu","tab_uusi_peli")
- 
+
  # js$collapse("uusipeli_box")
   updatedTempData$a <- isolate(updatedTempData$a + 1)
   updateNumericInput(session,"sarjataulukkokierros",value = 0)
@@ -192,7 +170,7 @@ observe({
 #slider_martin_lifet
 observeEvent(input$slider_martin_lifet,{
   slider_martin_lifet$value <- input$slider_martin_lifet
-  
+
 }, ignoreNULL = TRUE, ignoreInit = TRUE)
 
 observe({
@@ -205,7 +183,7 @@ observe({
 #slider_laurin_kasikortit
 observeEvent(input$slider_laurin_kasikortit,{
   slider_laurin_kasikortit$value <- input$slider_laurin_kasikortit
-  
+
 }, ignoreNULL = TRUE,priority = 2, ignoreInit = TRUE)
 
 observe({
@@ -231,7 +209,7 @@ observe({
 #slider_laurin_landit
 observeEvent(input$slider_laurin_landit,{
   slider_laurin_landit$value <- input$slider_laurin_landit
-  
+
 }, priority = 2, ignoreNULL = TRUE, ignoreInit = TRUE)
 
 observe({
@@ -244,7 +222,7 @@ observe({
 #slider_martin_landit
 observeEvent(input$slider_martin_landit,{
   slider_martin_landit$value <- input$slider_martin_landit
-  
+
 }, ignoreNULL = TRUE, priority = 2, ignoreInit = TRUE)
 
 observe({
@@ -257,7 +235,7 @@ observe({
 #slider_laurin_mulligan
 observeEvent(input$slider_laurin_mulligan,{
   slider_laurin_mulligan$value <- input$slider_laurin_mulligan
-  
+
 }, ignoreNULL = TRUE, priority = 2, ignoreInit = TRUE)
 
 observe({
@@ -271,7 +249,7 @@ observe({
 #slider_martin_mulligan
 observeEvent(input$slider_martin_mulligan,{
   slider_martin_mulligan$value <- input$slider_martin_mulligan
-  
+
 }, ignoreNULL = TRUE, priority = 2, ignoreInit = TRUE)
 
 observe({
@@ -284,7 +262,7 @@ observe({
 #slider_laurin_virhe
 observeEvent(input$slider_laurin_virhe,{
   slider_laurin_virhe$value <- input$slider_laurin_virhe
-  
+
 }, ignoreNULL = TRUE, priority = 2, ignoreInit = TRUE)
 
 observe({
@@ -298,7 +276,7 @@ observe({
 #slider_martin_virhe
 observeEvent(input$slider_martin_virhe,{
   slider_martin_virhe$value <- input$slider_martin_virhe
-  
+
 }, priority = 2, ignoreNULL = TRUE, ignoreInit = TRUE)
 
 observe({
@@ -328,7 +306,7 @@ observe({
   if ( slider_martin_kasikorit$value >= 0 &  slider_laurin_kasikortit$value >= 0) {
     shinyjs::enable("tallenna_tulos")
   } else {
-    
+
     shinyjs::disable("tallenna_tulos")
   }
   } else {
@@ -374,13 +352,13 @@ observe({
 
 #martti voitti globaali
 observeEvent(input$martti_voitti,{
-  
- 
+
+
   react_martti_voitti$value <- input$martti_voitti
 }, ignoreNULL = TRUE, ignoreInit = TRUE)
 
 observe({
-  
+
   if (react_martti_voitti$value > 0 ) {
     if (session$user != "overlay") {
  updateTabItems(session,"sidebarmenu","tab_tallenna_peli")
@@ -397,7 +375,7 @@ observeEvent(input$slider_vuoroarvio,{
   print("observe_event input$slider_vuoroarvio")
   print(input$slider_vuoroarvio)
   slider_vuoroarvio$value <- input$slider_vuoroarvio
-  
+
   #print(uusi_arvo)
    updateSliderInput(session, inputId = "slider_martin_landit", value = uusi_arvo)
    updateSliderInput(session, "slider_laurin_landit", value = uusi_arvo)
@@ -428,7 +406,7 @@ values <- reactiveValues(
 )
 
 observe({
-  
+
   lapply(names(input), function(x) {
     observe({
       input[[x]]
@@ -439,10 +417,10 @@ observe({
 
 #ruutu mikä näyttää muokattavaa numeroa
 output$last_changed_value_text <- renderText({
-  
+
   arvo <- input[[values$lastUpdated]]
   if(is.numeric(arvo)) {
-    tulos <- arvo 
+    tulos <- arvo
   }else {
     tulos <- ""
   }
@@ -466,10 +444,10 @@ req(eR_Peli_Aloittaja$a)
               min = 4,
               max = 16,
               value = 4)
-  
- 
+
+
 })
-  
+
 
 
 output$validateWinnerText <- renderText({
@@ -480,12 +458,12 @@ output$validateWinnerText <- renderText({
   } else {
     validate <- TRUE
   }
-  
+
   if (validate == TRUE) {
     result_text <- ""
   } else {
     result_text <- "Invalid life"
   }
 })
-  
-  
+
+
