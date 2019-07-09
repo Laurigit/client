@@ -6,33 +6,39 @@ eR_Peli_ID <- eventReactive(c(select_laurin_pakka$value,
 
                                 if (!is.null(select_laurin_pakka$value) & !is.null(select_martin_pakka$value)) {
 
+                                  #select_laurin_pakka <- NULL
+                                  #select_martin_pakka <- NULL
                                   # select_laurin_pakka$value <- 1
                                   # select_martin_pakka$value <-9
                                   required_functions("getUusi_Peli_ID")
-                                  required_data(c("ADM_PELIT"))
+                                  required_data(c("STG_PELISTATSIT"))
 
-                                  normiToiminto <- getUusi_Peli_ID(ADM_PELIT,
+                                  normiToiminto <- getUusi_Peli_ID(STG_PELISTATSIT,
                                                                   select_laurin_pakka$value,
                                                                   select_martin_pakka$value)
 
                                  # message("palautettu uusi peli id ", normiToiminto)
                                   return(normiToiminto)
                                 } else {
-                                  #print("JOS OLET TÄÄLLÄ, NIIN TÄMÄ OSA KOODISTA TUSKIN TOIMII. TARKISTA ONKO TEMPDATA STORAGESSSA OLEVA PELI_ID OLEMASSA")
-                                  required_data(c("ADM_PELIT", "ADM_TEMP_DATA_STORAGE"))
-
-                                  keskenPeliData <- ADM_TEMP_DATA_STORAGE
-
-                                 # message("eR_PELI_ID ", keskenPeliData)
-
-                                  P1 <- keskenPeliData[muuttuja == "Laurin_pakka", arvo]
-                                  P2 <- keskenPeliData[muuttuja == "Martin_pakka", arvo]
-                                  alkuLataus <- getPeli_ID_from_pakat(P1, P2, ADM_PELIT)
-
-                                  return(alkuLataus)
+                                  NApalautus <- NA
+                                  return(NApalautus)
                                 }
+                                # else {
+                                #   #print("JOS OLET TÄÄLLÄ, NIIN TÄMÄ OSA KOODISTA TUSKIN TOIMII. TARKISTA ONKO TEMPDATA STORAGESSSA OLEVA PELI_ID OLEMASSA")
+                                #   required_data(c("STG_PELISTATSIT", "ADM_TEMP_DATA_STORAGE"))
+                                #
+                                #   keskenPeliData <- ADM_TEMP_DATA_STORAGE
+                                #
+                                #  # message("eR_PELI_ID ", keskenPeliData)
+                                #
+                                #   P1 <- keskenPeliData[muuttuja == "Laurin_pakka", arvo]
+                                #   P2 <- keskenPeliData[muuttuja == "Martin_pakka", arvo]
+                                #   alkuLataus <- getPeli_ID_from_pakat(P1, P2, STG_PELISTATSIT)
+                                #
+                                #   return(alkuLataus)
+                                # }
                               }, ignoreInit = FALSE, ignoreNULL = FALSE)
-
+print("aa")
 
 observe({
 #1. päivitä uudet arvot
@@ -119,17 +125,17 @@ observeEvent(input$start_life_counter, {
 }, ignoreInit = TRUE, ignoreNULL = TRUE)
 
 
-
+print("125")
 
 
 #arvopeli
 observeEvent(input$arvo_peli,{
 #input$divariRadio <- 1
-  required_data("ADM_PELIT")
+  required_data("STG_PELISTATSIT")
  # browser()
   # input <- NULL
   # input$divariRadio <-1
-  arvottu_peli_id <- getRandomPeli_ID(ADM_PELIT, input$divariRadio)
+  arvottu_peli_id <- getRandomPeli_ID(STG_PELISTATSIT, input$divariRadio)
 
   paivitaSliderit(arvottu_peli_id,session)
 })
@@ -139,9 +145,9 @@ observeEvent(input$arvo_peli,{
 
 eR_Peli_Aloittaja <- reactiveValues(a = -1, b = -4)
 observe({
-required_data("ADM_PELIT")
+required_data("STG_PELISTATSIT")
 
-  pelidata <- ADM_PELIT[1 != 0]
+  pelidata <- STG_PELISTATSIT[1 != 0]
   result <- pelidata[Peli_ID == eR_Peli_ID(), .(Aloittaja, Omistaja_ID)][Omistaja_ID == "M", Aloittaja]
 
   eR_Peli_Aloittaja$a <- result
@@ -155,12 +161,12 @@ eR_UID_UUSI_PELI <- reactive({
   # input$radio_bo_mode<- FALSE
   # input$radio_pfi_mode <- FALSE
   #create dependency
-  eR_Peli_ID()
  # required_data(c("ADM_PELIT", "INT_PFI", "STG_PAKAT", "STG_OMISTAJA", "STAT_VOITTOENNUSTE", "STAT_CURRENT_PAKKA"))
 #required_functions("UID_UUSI_PELI")
- load("../common_data/UID_UUSI_PELI.RData")
+  required_data("STG_PELISTATSIT")
 
-  return(UID_UUSI_PELI)
+
+  return(STG_PELISTATSIT)
 })
 
 eR_UID_PAKKA <- eventReactive(c(input$numeric_MA_valinta,
@@ -170,8 +176,8 @@ eR_UID_PAKKA <- eventReactive(c(input$numeric_MA_valinta,
                                   # input$radio_bo_mode<- FALSE
                                   # input$radio_pfi_mode <- FALSE
 required_functions("UID_PAKKA")
-required_data(c("ADM_PELIT", "INT_PFI"))
-result <-  UID_PAKKA(ADM_PELIT,
+required_data(c("STG_PELISTATSIT", "INT_PFI"))
+result <-  UID_PAKKA(STG_PELISTATSIT,
                                                         INT_PFI,
                                                         input_MA_length = input$numeric_MA_valinta,
                                                         input_BO_mode  = input$radio_bo_mode,
@@ -186,7 +192,7 @@ eR_UID_PAKKA_VS <- eventReactive(c(input$numeric_MA_valinta,
                                   # input$radio_bo_mode<- FALSE
                                   # input$radio_pfi_mode <- FALSE
                                   required_functions("UID_PAKKA_VS")
-                                  result <-  UID_PAKKA_VS(ADM_PELIT,
+                                  result <-  UID_PAKKA_VS(STG_PELISTATSIT,
                                                        INT_PFI,
                                                        input_MA_length = input$numeric_MA_valinta,
                                                        input_BO_mode  = input$radio_bo_mode,
@@ -195,13 +201,15 @@ eR_UID_PAKKA_VS <- eventReactive(c(input$numeric_MA_valinta,
  })
 
 eR_UID_TURNAUS_EV <- eventReactive(tallenna_tulos_ui_update$value, {
-  required_data(c("STAT_VOITTOENNUSTE", "ADM_PELIT"))
-  results <- UID_TURNAUS_EV(ADM_PELIT, STAT_VOITTOENNUSTE)
+  required_data(c("STAT_VOITTOENNUSTE", "STG_PELISTATSIT"))
+  required_functions("UID_TURNAUS_EV")
+  results <- UID_TURNAUS_EV(STG_PELISTATSIT, STAT_VOITTOENNUSTE)
   return(results)
 }, ignoreNULL = FALSE, ignoreInit = FALSE)
 
 eV_UID_MALLI_KOMPONENTIT <- reactive( {
   required_data("STAT_VOITTOENNUSTE")
+
   tulos <- UID_MALLI_KOMPONENTIT(STAT_VOITTOENNUSTE,
                                  eR_Peli_ID())
   return(tulos)
@@ -210,12 +218,12 @@ eV_UID_MALLI_KOMPONENTIT <- reactive( {
 
 
 observeEvent(input$tasuriPeli, {
-required_data(c("ADM_PELIT", "STAT_VOITTOENNUSTE"))
-  uusPeliID <- getTasuriPeli(ADM_PELIT, STAT_VOITTOENNUSTE)
+required_data(c("STG_PELISTATSIT"))
+  uusPeliID <- getTasuriPeli(STG_PELISTATSIT)
   paivitaSliderit(uusPeliID, session)
 })
 
-
+print("222")
 
 
 tempDataLehtysLaskuri <- reactiveValues(a = 0)
@@ -224,6 +232,7 @@ updatedTempData<- reactiveValues(a = 0)
 
 #KOLME UI KOMPONENTTIA KOPIPASTETTY. TEE MUUTOKSET MOLEMPIIN
 output$PakkaLeftBox <- renderUI({
+  if (!is.na(eR_Peli_ID())) {
     result <- getDeckStats("Lauri", eR_UID_UUSI_PELI(), eR_Peli_ID())
     result_data <- result$data
   #  print("output$PakkaLeftBox")
@@ -263,12 +272,16 @@ output$PakkaLeftBox <- renderUI({
         )
       )
      )
+  } else {
+    "Not scheduled"
+  }
 })
 
 
 output$PakkaRightBox <- renderUI({
   #luo riippuvuus
   eR_UID_UUSI_PELI()
+  if (!is.na(eR_Peli_ID())) {
  # browser()
   ############
   result <- getDeckStats("Martti", eR_UID_UUSI_PELI(), eR_Peli_ID())
@@ -313,7 +326,9 @@ output$PakkaRightBox <- renderUI({
       )
     )
   )
-
+  } else {
+    "Not scheduled"
+  }
 
 })
 
@@ -321,7 +336,7 @@ output$PakkaRightBox <- renderUI({
 output$PakkaVSBox <- renderUI({
   #required_data("UID_UUSI_PELI", TRUE)
   #rm(eR_UID_UUSI_PELI)
-
+  if (!is.na(eR_Peli_ID())) {
   #luo riippuvuus
   (eR_UID_UUSI_PELI())
   ############
@@ -362,131 +377,135 @@ output$PakkaVSBox <- renderUI({
       )
     )
   )
+  } else {
+    "Not scheduled"
+  }
 })
+print("380")
 #KOPOT ALKAA ##########################################
-output$PakkaLeftBox_overlay <- renderUI({
-  result <- getDeckStats("Lauri", eR_UID_UUSI_PELI(), eR_Peli_ID())
-  result_data <- result$data
-  #  print("output$PakkaLeftBox")
-
-  #luo riippuvuus
-  #print(eR_UID_UUSI_PELI())
-  ############
-  box(
-    solidHeader = FALSE,
-    collapsible = FALSE,
-    width = NULL,
-    boxProfile(
-      src = paste0(result_data$Most_same_card, ".jpg"),
-      title = result_data$Deck,
-      boxProfileItemList(
-        bordered = TRUE,
-        boxProfileItem(
-          title = "Win%",
-          description = result_data$`Win%`
-        ),
-        boxProfileItem(
-          title = "Win%-MA",
-          description = result_data$`Win%-MA`
-        ),
-        boxProfileItem(
-          title = "Streak",
-          description = result_data$Streak
-        )
-      )
-    )
-  )
-})
-
-
-output$PakkaRightBox_overlay <- renderUI({
-  #luo riippuvuus
-  eR_UID_UUSI_PELI()
-  ############
-  result <- getDeckStats("Martti", eR_UID_UUSI_PELI(), eR_Peli_ID())
-  result_data <- result$data
-
-  box(
-    tags$head(tags$style(HTML('
-                              .boxProfileItem {
-                              font-family: "Georgia", Times, "Times New Roman", serif;
-                              font-weight: bold;
-                              font-size: 24px;
-                              }
-                              '))),
-    solidHeader = FALSE,
-    collapsible = FALSE,
-    width = NULL,
-    boxProfile(
-      src = paste0(result_data$Most_same_card, ".jpg"),
-      title = result_data$Deck,
-      boxProfileItemList(
-        bordered = TRUE,
-        boxProfileItem(
-          title = "Win%",
-          description = result_data$`Win%`
-        ),
-        boxProfileItem(
-          title = "Win%-MA",
-          description = result_data$`Win%-MA`
-        ),
-        boxProfileItem(
-          title = "Streak",
-          description = result_data$Streak
-        )
-      )
-    )
-    )
-
-
-  })
-
-
-output$PakkaVSBox_overlay <- renderUI({
-  #required_data("UID_UUSI_PELI", TRUE)
-  #rm(eR_UID_UUSI_PELI)
-
-  #luo riippuvuus
-  (eR_UID_UUSI_PELI())
-  ############
-  #eR_UID_UUSI_PELI <- required_reactive("UID_UUSI_PELI", "eR_UID_UUSI_PELI")
-  result <- getVSStatsHtml(eR_UID_UUSI_PELI(), "Lauri", eR_Peli_ID())
-  result_data <- result$data
-  #box(HTML(result), background = "aqua", width = NULL, align = "middle")
-  box(
-
-    solidHeader = FALSE,
-    collapsible = FALSE,
-    width = NULL,
-    boxProfile(
-      src = paste0(result_data$get_aloittaja_image, ".jpg"),
-      title = result_data$otsikko,
-      boxProfileItemList(
-        bordered = TRUE,
-        boxProfileItem(
-          title = "Win%",
-          description = result_data$`Win%`
-        ),
-        boxProfileItem(
-          title = "Win%-MA",
-          description = result_data$`Win%-MA`
-        ),
-        boxProfileItem(
-          title = "Streak",
-          description = result_data$Streak
-        ),
-        boxProfileItem(
-          title = "Games",
-          description = result_data$Games
-        ),
-        boxProfileItem(
-          title = "Prediction",
-          description = result_data$Prediction
-        )
-      )
-    )
-  )
-})
+# output$PakkaLeftBox_overlay <- renderUI({
+#   result <- getDeckStats("Lauri", eR_UID_UUSI_PELI(), eR_Peli_ID())
+#   result_data <- result$data
+#   #  print("output$PakkaLeftBox")
+#
+#   #luo riippuvuus
+#   #print(eR_UID_UUSI_PELI())
+#   ############
+#   box(
+#     solidHeader = FALSE,
+#     collapsible = FALSE,
+#     width = NULL,
+#     boxProfile(
+#       src = paste0(result_data$Most_same_card, ".jpg"),
+#       title = result_data$Deck,
+#       boxProfileItemList(
+#         bordered = TRUE,
+#         boxProfileItem(
+#           title = "Win%",
+#           description = result_data$`Win%`
+#         ),
+#         boxProfileItem(
+#           title = "Win%-MA",
+#           description = result_data$`Win%-MA`
+#         ),
+#         boxProfileItem(
+#           title = "Streak",
+#           description = result_data$Streak
+#         )
+#       )
+#     )
+#   )
+# })
+#
+#
+# output$PakkaRightBox_overlay <- renderUI({
+#   #luo riippuvuus
+#   eR_UID_UUSI_PELI()
+#   ############
+#   result <- getDeckStats("Martti", eR_UID_UUSI_PELI(), eR_Peli_ID())
+#   result_data <- result$data
+#
+#   box(
+#     tags$head(tags$style(HTML('
+#                               .boxProfileItem {
+#                               font-family: "Georgia", Times, "Times New Roman", serif;
+#                               font-weight: bold;
+#                               font-size: 24px;
+#                               }
+#                               '))),
+#     solidHeader = FALSE,
+#     collapsible = FALSE,
+#     width = NULL,
+#     boxProfile(
+#       src = paste0(result_data$Most_same_card, ".jpg"),
+#       title = result_data$Deck,
+#       boxProfileItemList(
+#         bordered = TRUE,
+#         boxProfileItem(
+#           title = "Win%",
+#           description = result_data$`Win%`
+#         ),
+#         boxProfileItem(
+#           title = "Win%-MA",
+#           description = result_data$`Win%-MA`
+#         ),
+#         boxProfileItem(
+#           title = "Streak",
+#           description = result_data$Streak
+#         )
+#       )
+#     )
+#     )
+#
+#
+#   })
+#
+#
+# output$PakkaVSBox_overlay <- renderUI({
+#   #required_data("UID_UUSI_PELI", TRUE)
+#   #rm(eR_UID_UUSI_PELI)
+#
+#   #luo riippuvuus
+#   (eR_UID_UUSI_PELI())
+#   ############
+#   #eR_UID_UUSI_PELI <- required_reactive("UID_UUSI_PELI", "eR_UID_UUSI_PELI")
+#   result <- getVSStatsHtml(eR_UID_UUSI_PELI(), "Lauri", eR_Peli_ID())
+#   result_data <- result$data
+#   #box(HTML(result), background = "aqua", width = NULL, align = "middle")
+#   box(
+#
+#     solidHeader = FALSE,
+#     collapsible = FALSE,
+#     width = NULL,
+#     boxProfile(
+#       src = paste0(result_data$get_aloittaja_image, ".jpg"),
+#       title = result_data$otsikko,
+#       boxProfileItemList(
+#         bordered = TRUE,
+#         boxProfileItem(
+#           title = "Win%",
+#           description = result_data$`Win%`
+#         ),
+#         boxProfileItem(
+#           title = "Win%-MA",
+#           description = result_data$`Win%-MA`
+#         ),
+#         boxProfileItem(
+#           title = "Streak",
+#           description = result_data$Streak
+#         ),
+#         boxProfileItem(
+#           title = "Games",
+#           description = result_data$Games
+#         ),
+#         boxProfileItem(
+#           title = "Prediction",
+#           description = result_data$Prediction
+#         )
+#       )
+#     )
+#   )
+# })
 
 
 
@@ -572,9 +591,8 @@ output$EV_plot_ovelary <- renderPlot({
 })
 #################### KOPIPASTETTU. TEE MUUTOKSET MOLEMPIIN#
 
-
-
 output$win_distribution <- renderPlot({
+  if (!is.na(eR_Peli_ID())) {
   melttaa <- eV_UID_MALLI_KOMPONENTIT()
   graphs_breaks <- melttaa[, Turnaus_NO]
   plot <- ggplot(melttaa, aes(x = (Turnaus_NO), y = Martin_etu, colour = variable)) + geom_line(size = 1.5) +
@@ -587,7 +605,7 @@ output$win_distribution <- renderPlot({
     scale_x_continuous(name = "Turnaus_NO",
                        breaks = graphs_breaks) +
     ylim(-0.5,0.50)
-
+  }
 })
 
 
@@ -647,3 +665,4 @@ observeEvent(input$select_laurin_pakka,{
   }
 
  })
+

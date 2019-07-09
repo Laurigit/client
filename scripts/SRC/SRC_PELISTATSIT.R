@@ -1,0 +1,3 @@
+#SRC_PELISTATSIT
+load("../common_data/UID_UUSI_PELI.RData")
+SRC_PELISTATSIT <- UID_UUSI_PELI[1 != 0]

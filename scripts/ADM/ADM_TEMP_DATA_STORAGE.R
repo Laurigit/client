@@ -1,7 +1,7 @@
 #ADM_TEMP_DATA_STORAGE
-required_data(c("STG_TEMP_DATA_STORAGE", "ADM_PELIT"))
+required_data(c("STG_TEMP_DATA_STORAGE", "STG_PELISTATSIT"))
 Peli_ID_valittu <- STG_TEMP_DATA_STORAGE[muuttuja == "Peli_ID", arvo]
-pelidata <- ADM_PELIT[Peli_ID == Peli_ID_valittu & Omistaja_ID == "L", .(Laurin_pakka = Pakka_ID,   Martin_pakka = Vastustajan_Pakka_ID, melt = "mtel")]
+pelidata <- STG_PELISTATSIT[Peli_ID == Peli_ID_valittu & Omistaja_ID == "L", .(Laurin_pakka = Pakka_ID,   Martin_pakka = Vastustajan_Pakka_ID, melt = "melt")]
 
 melttaa <- melt.data.table(pelidata, id.vars = "melt")
 

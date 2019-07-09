@@ -49,9 +49,9 @@ getVSStatsHtml <- function(UID_UUSI_PELI, Omistaja1, input_Peli_ID) {
   #  "<h4>", variable, ":<b> ", value, "<b><br/>")]
 
   ottelu_ID <- UID_UUSI_PELI[Omistaja_NM == Omistaja1 & Peli_ID == input_Peli_ID, Ottelu_ID]
-  tilanne <- paste0(UID_UUSI_PELI[Omistaja_NM == "Lauri", sum(Voittaja, na.rm = TRUE)],
+  tilanne <- paste0(UID_UUSI_PELI[Omistaja_NM == "Lauri" & Peli_ID == input_Peli_ID , sum(Voittaja, na.rm = TRUE)],
                     "-",
-                    UID_UUSI_PELI[Omistaja_NM == "Martti", sum(Voittaja, na.rm = TRUE)])
+                    UID_UUSI_PELI[Omistaja_NM == "Martti" & Peli_ID == input_Peli_ID, sum(Voittaja, na.rm = TRUE)])
  peleja_jaljella <- nrow(UID_UUSI_PELI[Omistaja_NM == "Lauri" & is.na(Voittaja) & Peli_ID == input_Peli_ID]) > 0
   # tilanne <- paste0(UID_UUSI_PELI[Omistaja_NM == Omistaja1, Tilanne], "-", UID_UUSI_PELI[!Omistaja_NM == Omistaja1, Tilanne])
   etuliite <- ifelse(UID_UUSI_PELI[Omistaja_NM == Omistaja1  & Peli_ID == input_Peli_ID, Aloittaja] == 1, "*", "")
