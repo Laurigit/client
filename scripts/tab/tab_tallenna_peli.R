@@ -125,12 +125,12 @@ observe({
 
   required_data(c("ADM_CURRENT_TURN", "ADM_CURRENT_TURN"))
   write.table(x = ADM_CURRENT_DMG[1 == 0],
-              file = paste0("./dmg_turn_files/", "current_dmg.csv"),
+              file = paste0("../common_data/", "current_dmg.csv"),
               sep = ";",
               row.names = FALSE,
               dec = ",")
   write.table(x = ADM_CURRENT_TURN[1 == 0],
-              file = paste0("./dmg_turn_files/", "current_turn.csv"),
+              file = paste0("../common_data/", "current_turn.csv"),
               sep = ";",
               row.names = FALSE,
               dec = ",")

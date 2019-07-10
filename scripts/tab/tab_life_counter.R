@@ -303,7 +303,7 @@ observe({
   templife <- calc_life_totals(damage_data$data)
   # print(templife)
   #validate input
-  if(templife$count_missing_rows == 0){
+  if(isolate(templife$count_missing_rows == 0)){
 
     print("kirjotetaan csv")
     print(damage_data$data)
@@ -323,11 +323,11 @@ observe({
     waiting_opponent_input$waiting <- FALSE
     opponent_waiting_my_input$waiting <- FALSE
     updateTabsetPanel(session, "lifeBox", selected = "life_input")
-  } else if (templife$count_missing_rows == 2) {
+  } else if (isolate(templife$count_missing_rows == 2)) {
     #error
     #show both players input and let them choose the correct.
     input_error$error <- TRUE
-    message("input error",  input_error$error)
+    #message("input error",  input_error$error)
     waiting_opponent_input$waiting <- FALSE
     opponent_waiting_my_input$waiting <- FALSE
 
@@ -339,7 +339,7 @@ observe({
     #if I did not do the input, then opponent is waiting mine
     waiting_opponent_input$waiting <- FALSE
     opponent_waiting_my_input$waiting <- TRUE
-  } else if (templife$count_missing_rows > 2) {
+  } else if (isolate(templife$count_missing_rows > 2)) {
     input_error$error <- FALSE
     waiting_opponent_input <- FALSE
     opponent_waiting_my_input$waiting <- FALSE
@@ -629,7 +629,7 @@ observe({
 take_dep <-  local_turn$value
 print("writing to turn csv")
   new_row <- data.table(TSID = isolate(turnData$turn),
-                        Peli_ID = eR_Peli_ID(),
+                        Peli_ID = isolate(eR_Peli_ID()),
                         time_stamp =  as.character(now(tz = "EET")))
 
   #  print(str(new_row))

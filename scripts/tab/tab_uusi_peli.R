@@ -38,55 +38,55 @@ eR_Peli_ID <- eventReactive(c(select_laurin_pakka$value,
                                 #   return(alkuLataus)
                                 # }
                               }, ignoreInit = FALSE, ignoreNULL = FALSE)
-print("aa")
-
-observe({
-#1. päivitä uudet arvot
-                 # laurin_pakka<-1
-                 # martin_pakka<-10
-                 # laurin_mull<-0
-                 # martin_mull<-1
-      Aloitus_DT <- now(tz = "EET")
-      Peli_ID  <- eR_Peli_ID()
-
-      req(  input$slider_laurin_mulligan,
-            input$slider_martin_mulligan)
-      laurin_mull <- input$slider_laurin_mulligan
-      martin_mull <- input$slider_martin_mulligan
-
-      muuttujat<-c(
-                   "Aloitus_DT",
-                   "Laurin_mulligan",
-                   "Martin_mulligan",
-                   "Peli_ID")
-      arvot <- c(
-               as.character(Aloitus_DT),
-               laurin_mull,
-               martin_mull,
-               Peli_ID)
-      temp_data_storage <- data.table(muuttuja = muuttujat, arvo = arvot)
-      #jos mikään ei muutu, niin älä lähetä
-      required_data("ADM_TEMP_DATA_STORAGE")
-      ssColsVanhat <- ADM_TEMP_DATA_STORAGE[muuttuja %in% c("Peli_ID", "Laurin_mulligan", "Martin_mulligan"), arvo]
 
 
-      ssColsUudet <- temp_data_storage[muuttuja %in% c("Peli_ID", "Laurin_mulligan", "Martin_mulligan"), arvo]
-
-      comparison <- all.equal(ssColsVanhat, ssColsUudet)
-      if(!comparison == TRUE) {
-
-      kircsv(temp_data_storage,"temp_data_storage.csv", upload = FALSE)
-      wc(temp_data_storage, "../common_data/", "temp_data_storage")
-
-      required_data("ADM_DI_HIERARKIA")
-
-      updateData("SRC_TEMP_DATA_STORAGE", ADM_DI_HIERARKIA, input_env = globalenv())
-
-      #nollaa tempdatalaskuri
-      tempDataLehtysLaskuri$a <- 0
-      }
-
-})
+# observe({
+# #1. päivitä uudet arvot
+#                  # laurin_pakka<-1
+#                  # martin_pakka<-10
+#                  # laurin_mull<-0
+#                  # martin_mull<-1
+#     #  Aloitus_DT <- now(tz = "EET")
+#      # Peli_ID  <- eR_Peli_ID()
+#
+#       req(  input$slider_laurin_mulligan,
+#             input$slider_martin_mulligan)
+#       laurin_mull <- input$slider_laurin_mulligan
+#       martin_mull <- input$slider_martin_mulligan
+#
+#       muuttujat<-c(
+#                    "Aloitus_DT",
+#                    "Laurin_mulligan",
+#                    "Martin_mulligan",
+#                    "Peli_ID")
+#       arvot <- c(
+#                as.character(Aloitus_DT),
+#                laurin_mull,
+#                martin_mull,
+#                Peli_ID)
+#       temp_data_storage <- data.table(muuttuja = muuttujat, arvo = arvot)
+#       #jos mikään ei muutu, niin älä lähetä
+#       required_data("ADM_TEMP_DATA_STORAGE")
+#       ssColsVanhat <- ADM_TEMP_DATA_STORAGE[muuttuja %in% c("Peli_ID", "Laurin_mulligan", "Martin_mulligan"), arvo]
+#
+#
+#       ssColsUudet <- temp_data_storage[muuttuja %in% c("Peli_ID", "Laurin_mulligan", "Martin_mulligan"), arvo]
+#
+#       comparison <- all.equal(ssColsVanhat, ssColsUudet)
+#       if(!comparison == TRUE) {
+#
+#
+#       wc(temp_data_storage, "../common_data/", "temp_data_storage")
+#
+#       required_data("ADM_DI_HIERARKIA")
+#
+#       updateData("SRC_TEMP_DATA_STORAGE", ADM_DI_HIERARKIA, input_env = globalenv())
+#
+#       #nollaa tempdatalaskuri
+#       tempDataLehtysLaskuri$a <- 0
+#       }
+#
+# })
 
 #jos alotetaan life counter game, niin nollaa temp_data_storage
 observeEvent(input$start_life_counter, {
@@ -113,8 +113,8 @@ observeEvent(input$start_life_counter, {
 
 
 
-    kircsv(tempData,"temp_data_storage.csv", upload = FALSE)
 
+wc(tempData, "../common_data/", "temp_data_storage" )
     required_data("ADM_DI_HIERARKIA")
 
     updateData("SRC_TEMP_DATA_STORAGE", ADM_DI_HIERARKIA, input_env = globalenv())
@@ -125,7 +125,6 @@ observeEvent(input$start_life_counter, {
 }, ignoreInit = TRUE, ignoreNULL = TRUE)
 
 
-print("125")
 
 
 #arvopeli
@@ -223,7 +222,7 @@ required_data(c("STG_PELISTATSIT"))
   paivitaSliderit(uusPeliID, session)
 })
 
-print("222")
+
 
 
 tempDataLehtysLaskuri <- reactiveValues(a = 0)
@@ -381,7 +380,7 @@ output$PakkaVSBox <- renderUI({
     "Not scheduled"
   }
 })
-print("380")
+
 #KOPOT ALKAA ##########################################
 # output$PakkaLeftBox_overlay <- renderUI({
 #   result <- getDeckStats("Lauri", eR_UID_UUSI_PELI(), eR_Peli_ID())
@@ -547,7 +546,7 @@ observe({
 
   isolate(tempDataLehtysLaskuri$a <- tempDataLehtysLaskuri$a + 1)
   if ( tempDataLehtysLaskuri$a == 10) {
-    zip_all_and_send()
+
     shinyjs::addClass(selector = "body", class = "sidebar-collapse")
 
   }
@@ -636,7 +635,7 @@ observeEvent(input$select_laurin_pakka,{
  observe({
    print("life counter_nappula")
    print(start_life_counter_button$value)
-   required_data(c("ADM_CURRENT_TURN", "ADM_CURRENT_TURN"))
+   required_data(c("ADM_CURRENT_TURN", "ADM_CURRENT_DMG"))
    if (session$user != "overlay" & start_life_counter_button$value > 0) {
      updateTabItems(session,"sidebarmenu", "tab_LifeCounter")
      addClass(selector = "body", class = "sidebar-collapse")
@@ -644,12 +643,12 @@ observeEvent(input$select_laurin_pakka,{
 
   if (start_life_counter_button$value == 1) {
    write.table(x = ADM_CURRENT_DMG[1 == 0],
-               file = paste0("./dmg_turn_files/", "current_dmg.csv"),
+               file = paste0("../common_data/", "current_dmg.csv"),
                sep = ";",
                row.names = FALSE,
                dec = ",")
    write.table(x = ADM_CURRENT_TURN[1 == 0],
-               file = paste0("./dmg_turn_files/", "current_turn.csv"),
+               file = paste0("../common_data/", "current_turn.csv"),
                sep = ";",
                row.names = FALSE,
                dec = ",")
