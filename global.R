@@ -63,7 +63,7 @@ Sys.setenv(TZ='EET')
 #saveRDS(token, "droptoken.rds")
 # Upload droptoken to your server
 # read it back with readRDS
-token <- readRDS("droptoken.rds")
+
 # Then pass the token to each drop_ function
 #drop_acc(dtoken = token)
 
