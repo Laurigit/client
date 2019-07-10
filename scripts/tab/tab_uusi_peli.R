@@ -90,7 +90,7 @@ eR_Peli_ID <- eventReactive(c(select_laurin_pakka$value,
 
 #jos alotetaan life counter game, niin nollaa temp_data_storage
 observeEvent(input$start_life_counter, {
-
+print("input$start_life_counter painettu")
    Aloitus_DT <- now(tz = "EET")
   Peli_ID  <- eR_Peli_ID()
 
@@ -335,6 +335,7 @@ output$PakkaRightBox <- renderUI({
 output$PakkaVSBox <- renderUI({
   #required_data("UID_UUSI_PELI", TRUE)
   #rm(eR_UID_UUSI_PELI)
+
   if (!is.na(eR_Peli_ID())) {
   #luo riippuvuus
   (eR_UID_UUSI_PELI())
@@ -633,8 +634,10 @@ observeEvent(input$select_laurin_pakka,{
  #toiminnot, kun painetaan nappulaa, mikä käynnistää life_counterin
 
  observe({
-   print("life counter_nappula")
-   print(start_life_counter_button$value)
+
+   print("start_life_counter_button$value  triggered")
+   print(start_life_counter_button$value )
+  # print(start_life_counter_button$value)
    required_data(c("ADM_CURRENT_TURN", "ADM_CURRENT_DMG"))
    if (session$user != "overlay" & start_life_counter_button$value > 0) {
      updateTabItems(session,"sidebarmenu", "tab_LifeCounter")

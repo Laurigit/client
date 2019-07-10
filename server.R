@@ -187,8 +187,9 @@ updateTabItems(session,"sidebarmenu", "tab_overlay")
     dir_list <- sourcelist[kansio == input_kansio, polku]
     for(filename in dir_list) {
       result = tryCatch({
-        print(paste0("sourced ", filename))
+        print(paste0("sourcing at server", filename))
         source(paste0("./scripts/", filename), local = TRUE)
+        print(paste0("sourced at server", filename))
       }, error = function(e) {
         print(paste0("error in loading file: ", filename))
       })

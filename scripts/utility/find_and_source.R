@@ -16,6 +16,7 @@ find_and_source <- function(source_list, used_env = globalenv()) {
   for(source_loop in filenames[match_nm == TRUE & file_ending == ".R", filename]) {
     print(paste0("Sourcing ", source_loop))
     source(source_loop, local = used_env, encoding="utf-8")
+    print(paste0("Sourced ", source_loop))
   }
   if(length(source_files_not_found) > 0) {
     warning(source_files_not_found)

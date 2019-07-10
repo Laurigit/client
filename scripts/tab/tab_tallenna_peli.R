@@ -1,5 +1,5 @@
 #tallennapeli
-#input_Peli_ID <-909
+# input_Peli_ID <-909
 #
 # Aloitusaika <-1
 # Aloituspvm<-1
@@ -16,7 +16,7 @@
 # Vuoroarvio<-1
 # Laurin_kasikortit<-1
 # Martin_kasikortit<-1
-#
+
 
 #required_data("ADM_TEMP_DATA_STORAGE")
 #tempData <- ADM_TEMP_DATA_STORAGE
@@ -41,8 +41,8 @@ aloittajaNo <- eR_Peli_Aloittaja$a
   }
   # print("VUOROARVIOLASKU")
   # print(vuoroarviolasku)
-#browser()
-  uusrivi<- c(
+
+  uusrivi<- data.table(
     Aloitus_DT = as.character(tempData[muuttuja=="Aloitus_DT",arvo]),
     Lopetus_DT = as.character(now(tz = "EET")),
     Voittaja=as.character(input$radio_voittaja),
@@ -62,6 +62,16 @@ aloittajaNo <- eR_Peli_Aloittaja$a
     Laurin_kasikortit=input$slider_laurin_kasikortit,
     Martin_kasikortit=input$slider_martin_kasikorit
   )
+
+  #update STG_PELISTATSIT
+
+
+
+  STG_PELISTATSIT[Peli_ID == input_Peli_ID,
+                  ':=' (Voittaja = ifelse(Omistaja_ID == "L", 1 - as.numeric(uusrivi[, Voittaja]), as.numeric(uusrivi[, Voittaja])),
+                               Aloitus_DT = as.POSIXct(uusrivi[, Aloitus_DT]))]
+  assign("UID_UUSI_PELI", STG_PELISTATSIT )
+  save(list = "UID_UUSI_PELI", file = "../common_data/UID_UUSI_PELI.RData")
 
   #tyhjennä tempdata
   wc(uusrivi, "../common_data/", paste0("Result_", input_Peli_ID))
@@ -116,8 +126,8 @@ aloittajaNo <- eR_Peli_Aloittaja$a
 
 observe({
   if (session$user != "overlay") {
-  print("tallenna_tulos_ui_update$value")
-  print(tallenna_tulos_ui_update$value)
+  #print("tallenna_tulos_ui_update$value")
+ # print(tallenna_tulos_ui_update$value)
  if( tallenna_tulos_ui_update$value > 0 ) {
 
   #do once
@@ -290,8 +300,8 @@ observe({
 
 
 observe({
-  print("slider_vuoroarvio")
-  print(slider_vuoroarvio$value)
+  #print("slider_vuoroarvio")
+ # print(slider_vuoroarvio$value)
   if(inputLoop$allow_change == TRUE) {
   updateSliderInput(session,
                     inputId = "slider_vuoroarvio", value = slider_vuoroarvio$value)
@@ -372,8 +382,8 @@ observeEvent(input$slider_vuoroarvio,{
 #  print("rab_tallenna slider voroarvio")
   uusi_arvo <- round(input$slider_vuoroarvio * 0.42)
 
-  print("observe_event input$slider_vuoroarvio")
-  print(input$slider_vuoroarvio)
+  #print("observe_event input$slider_vuoroarvio")
+ # print(input$slider_vuoroarvio)
   slider_vuoroarvio$value <- input$slider_vuoroarvio
 
   #print(uusi_arvo)

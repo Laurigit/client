@@ -32,11 +32,11 @@ setActionButtonStatus <- function(Status, button) {
   if (Status == "enable") {
     shinyjs::enable(button)
     actButtonStatus[[button]] <- TRUE
-     isolate(print(paste0(button, " = ", actButtonStatus[[button]]," ", session$user)))
+     #isolate(print(paste0(button, " = ", actButtonStatus[[button]]," ", session$user)))
    } else {
      shinyjs::disable(button)
      actButtonStatus[[button]] <- FALSE
-     isolate(print(paste0(button, " = ", actButtonStatus[[button]]," ", session$user)))
+   #  isolate(print(paste0(button, " = ", actButtonStatus[[button]]," ", session$user)))
   }
 
 
@@ -244,11 +244,11 @@ observe({
     } else {
       I_start <- FALSE
     }
-    print("I_start")
-    print(paste0(I_start))
+   # print("I_start")
+  #  print(paste0(I_start))
     Stareters_turn_boo <- I_start == input$isMyTurn
-    print("Stareters_turn_boo")
-    print(Stareters_turn_boo)
+   # print("Stareters_turn_boo")
+  # print(Stareters_turn_boo)
     required_data("ADM_TURN_SEQ")
     turnValue <-  ADM_TURN_SEQ[End_phase == input$isEndStep &
                                  Starters_turn == Stareters_turn_boo &
@@ -298,15 +298,17 @@ observe({
 #observeEvent damage_data$data
 #handles changed in damagedate
 observe({
+  print("dmgdata triggereds")
   #jos muuttuu, niin validoi ja kirjota, jos validi
  # print(damage_data$data)
   templife <- calc_life_totals(damage_data$data)
   # print(templife)
   #validate input
   if(isolate(templife$count_missing_rows == 0)){
-
-    print("kirjotetaan csv")
-    print(damage_data$data)
+print("isolate(templife$count_missing_rows")
+    print(isolate(templife$count_missing_rows))
+   # print("kirjotetaan csv")
+    #print(damage_data$data)
     #write to csv
     wc(damage_data$data, folder = "../common_data/", "current_dmg")
     # write.table(x = damage_data$data,
@@ -626,8 +628,9 @@ observeEvent(input$ab_pakita_endille, {
 #observe localTurn
 observe({
   required_data("ADM_CURRENT_TURN")
+  print("localturn triggered")
 take_dep <-  local_turn$value
-print("writing to turn csv")
+#print("writing to turn csv")
   new_row <- data.table(TSID = isolate(turnData$turn),
                         Peli_ID = isolate(eR_Peli_ID()),
                         time_stamp =  as.character(now(tz = "EET")))
@@ -652,11 +655,12 @@ print("writing to turn csv")
 #handle ui status based on turndata and life_input
 observe({
   required_data("ADM_TURN_SEQ")
+  print("turndata triggered")
 if(turnData$turn > 0) {
   print("Käyty sörkkimässä UITA.  Waiting = ")
-  print(waiting_opponent_input$waiting )
-  print("turndata$turn")
-  print(turnData$turn)
+  #print(waiting_opponent_input$waiting )
+  #print("turndata$turn")
+ # print(turnData$turn)
   if (waiting_opponent_input$waiting == TRUE) {
     updateTabsetPanel(session, "lifeBox", selected = "waiting_panel")
     setActionButtonStatus("disable", "ab_Vaihda_vuoro")
@@ -676,18 +680,18 @@ if(turnData$turn > 0) {
   my_turn <- I_start == ADM_TURN_SEQ[TSID == turnData$turn, Starters_turn]
   end_phase <-  ADM_TURN_SEQ[TSID == turnData$turn, End_phase]
   if (my_turn == TRUE & end_phase == FALSE) {
-    print("my_turn == TRUE & end_phase == FALSE")
+    #print("my_turn == TRUE & end_phase == FALSE")
     setActionButtonStatus("enable", "ab_Vaihda_vuoro")
   #  shinyjs::enable("ab_Vaihda_vuoro_virhe")
     setActionButtonStatus("enable", "ab_pakita_endille")
   } else if  (my_turn == TRUE & end_phase == TRUE) {
-    print("my_turn == TRUE & end_phase == TRUE")
+   # print("my_turn == TRUE & end_phase == TRUE")
     setActionButtonStatus("enable", "ab_Vaihda_vuoro")
  #   shinyjs::enable("ab_Vaihda_vuoro_virhe")
     setActionButtonStatus("disable", "ab_pakita_endille")
 
   } else {
-    print("ELSE")
+  #  print("ELSE")
     setActionButtonStatus("disable", "ab_Vaihda_vuoro")
     setActionButtonStatus("disable", "ab_pakita_endille")
  #   shinyjs::disable("ab_Vaihda_vuoro_virhe")
@@ -1023,16 +1027,16 @@ observe({
     }
 
 
-    print("turn")
-    print(isolate(turnData$turn))
-    print("mulligan")
-    print(mulligan_lkm)
+    #print("turn")
+  #  print(isolate(turnData$turn))
+  #  print("mulligan")
+   # print(mulligan_lkm)
 
     update_value <- ADM_TURN_SEQ[TSID == isolate(turnData$turn), Turn] + 6 - mulligan_lkm
 
 
-    print("peli tallentuu, mika arvo")
-    isolate(print(slider_vuoroarvio$value))
+    #print("peli tallentuu, mika arvo")
+   # isolate(print(slider_vuoroarvio$value))
     slider_laurin_lifet$value <- life_totals$data$Lifetotal[Omistaja_NM == "Lauri", Life_total]
     slider_martin_lifet$value <-   life_totals$data$Lifetotal[Omistaja_NM == "Martti", Life_total]
     if (life_totals$data$Lifetotal[which.min(Life_total), Omistaja_NM] == "Lauri") {

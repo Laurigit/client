@@ -1,7 +1,7 @@
 #options are prod, test, dev
 options(shiny.trace = FALSE)
 GLOBAL_test_mode <- "prod"
-options(shiny.fullstacktrace = TRUE)
+options(shiny.fullstacktrace = FALSE)
 if(!GLOBAL_test_mode %in% c("test", "prod", "dev")) {
   stop()
 }
@@ -92,8 +92,9 @@ for(input_kansio in input_kansio_list) {
   dir_list <- sourcelist[kansio == input_kansio, polku]
   for(filename in dir_list) {
     result = tryCatch({
-      print(paste0("sourced ", filename))
+      print(paste0("sourcing ", filename))
       source(paste0("./scripts/", filename), local = TRUE)
+      print(paste0("sourced ", filename))
     }, error = function(e) {
       print(paste0("error in loading file: ", filename))
     })

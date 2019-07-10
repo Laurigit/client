@@ -53,20 +53,13 @@ sidebar <- dashboardSidebar(
               menuItem("Tallenna peli", icon = icon("hdd"), tabName = "tab_tallenna_peli"),
               menuItem("LifeCounter", tabName = "tab_LifeCounter", icon = icon("gamepad")),
               menuItem("Overlay", icon = icon("server"), tabName = "tab_overlay"),
-              radioButtons("radio_pfi_mode",
-                           label = h5("PFI mode"),
-                           choices = list("Pois" = FALSE, "Paalla" = TRUE),
-                           selected = TRUE,
-                           inline = T),
+
               # actionButton("automated_tests", label = h5("Run tests")),
-             actionButton("blow_timer", label = h5("Blow timer")),
              actionButton("refresh", label = "Update data"),
-             radioButtons("radio_bo_mode", label = h5("BO mode"),choices = list("Pois" = FALSE, "Paalla" = TRUE), selected = FALSE,inline=T),
              #radioButtons("radio_total_mode", label = h5("Total mode"),choices = list("Pois" = FALSE, "Paalla" = TRUE), selected = FALSE,inline=T),
 
              #radioButtons("radio_debug_mode", label = h5("Debug"),choices = list("Pois" = FALSE, "Paalla" = TRUE), selected = FALSE,inline=T),
                #div(style="display:inline-block;width:90%;text-align: center;",uiOutput("sarjataulukkovalitsin")),
-              numericInput("numeric_MA_valinta","Valitse Ed X pelia",value=7),
              actionButton("loginbutton", "Login")
               #menuSubItem(icon = NULL,actionButton("luo_peleja","Luo uudet pelit"))
   )
