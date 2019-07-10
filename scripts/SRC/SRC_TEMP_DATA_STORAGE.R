@@ -2,7 +2,7 @@
 
 
 required_functions("rc")
-if (file.exists("../common_data/")) {
+if (file.exists("../common_data/temp_data_storage.csv")) {
 readtds <- rc("temp_data_storage.csv")
 } else {
   muuttujat<-c(
