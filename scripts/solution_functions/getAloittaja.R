@@ -1,7 +1,7 @@
 getAloittaja <- function(STG_PELISTATSIT_input, Peli_ID_input) {
   if (!is.na(Peli_ID_input)) {
   result <- NULL
-  result$Aloittaja_nr <- STG_PELISTATSIT_input[Peli_ID == Peli_ID_input & Omistaja_ID == "L", Aloittaja]
+  result$Aloittaja_nr <- STG_PELISTATSIT_input[Peli_ID == Peli_ID_input & Omistaja_ID == "M", Aloittaja]
   if(result$Aloittaja_nr == 0) {
     result$Aloittaja_NM <- "Lauri"
     result$Aloittaja_ID <- "L"
