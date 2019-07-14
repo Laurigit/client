@@ -425,18 +425,18 @@ observe({
   })
 })
 
-#ruutu mikä näyttää muokattavaa numeroa
-output$last_changed_value_text <- renderText({
-
-  arvo <- input[[values$lastUpdated]]
-  if(is.numeric(arvo)) {
-    tulos <- arvo
-  }else {
-    tulos <- ""
-  }
-
-  tulos
-})
+# #ruutu mikä näyttää muokattavaa numeroa
+# output$last_changed_value_text <- renderText({
+#
+#   arvo <- input[[values$lastUpdated]]
+#   if(is.numeric(arvo)) {
+#     tulos <- arvo
+#   }else {
+#     tulos <- ""
+#   }
+#
+#   tulos
+# })
 
 #Vuoroarvaus, kumman korttimäärä
 output$vuoroArvausPelaaja <- renderUI({
