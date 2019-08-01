@@ -75,7 +75,7 @@ aloittajaNo <- eR_Peli_Aloittaja$a
 
   #tyhjennä tempdata
   wc(uusrivi, "../common_data/", paste0("Result_", input_Peli_ID))
-
+  wc(uusrivi, "../common_data/", paste0("Result_for_betting", input_Peli_ID))
 
 
   # updateSliderInput(session, "slider_laurin_mulligan",  value = 0)
