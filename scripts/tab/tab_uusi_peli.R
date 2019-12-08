@@ -172,6 +172,12 @@ required_data(c("STG_PELISTATSIT"))
   paivitaSliderit(uusPeliID, session)
 })
 
+observeEvent(input$havioPeli, {
+  required_data(c("STG_PELISTATSIT"))
+  uusPeliID <- getTasuriPeli(STG_PELISTATSIT, reverse = TRUE)
+  paivitaSliderit(uusPeliID, session)
+})
+
 
 
 

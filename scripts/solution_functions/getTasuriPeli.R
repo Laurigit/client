@@ -1,7 +1,7 @@
 
 #test <- getTasuriPeli(ADM_PELIT, STAT_VOITTOENNUSTE)
 #STAT_VOITTOENNUSTE[Peli_ID == test]
-getTasuriPeli <- function(input_STG_PELISTATSIT) {
+getTasuriPeli <- function(input_STG_PELISTATSIT, reverse = FALSE) {
 #required_data("STG_PELISTATSIT")
 
   nykyTurnaus <- input_STG_PELISTATSIT[ Omistaja_ID == "L"]
@@ -27,8 +27,19 @@ getTasuriPeli <- function(input_STG_PELISTATSIT) {
                         Martti = Martti_johtaa,
                         Tasan = Tasan,
                         Lauri = Lauri_johtaa)
-
+  if (reverse == FALSE){
+    lopputulos <-  switch(turnausTilanneInput,
+                          Martti = Martti_johtaa,
+                          Tasan = Tasan,
+                          Lauri = Lauri_johtaa)
+  } else {
+    lopputulos <-  switch(turnausTilanneInput,
+                          Lauri = Martti_johtaa,
+                          Tasan = Tasan,
+                          Martti = Lauri_johtaa)
+  }
 
   uusPeliID <- lopputulos
+
   return(uusPeliID)
   }
