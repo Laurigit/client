@@ -24,8 +24,16 @@
 # eR_Peli_Aloittaja <- NULL
 # eR_Peli_Aloittaja$a <- 1
 #vuoroarviolasku <- 9
+
 observeEvent(input$tallenna_tulos, {
- shinyjs::disable("tallenna_tulos")
+  tallenna_tulos_ui_launch$value <- tallenna_tulos_ui_launch$value + 1
+  shinyjs::disable("tallenna_tulos")
+})
+
+
+observeEvent(tallenna_tulos_ui_launch$value, {
+  browser()
+if (tallenna_tulos_ui_launch$value ==  2) {
   input_Peli_ID <- eR_Peli_ID()
   #vuoroarviolasku
 required_data(c("ADM_TEMP_DATA_STORAGE", "ADM_CURRENT_TURN", "ADM_CURRENT_DMG" ))
@@ -121,7 +129,8 @@ aloittajaNo <- eR_Peli_Aloittaja$a
             to = new_name2)
   #tun once for each players.
   tallenna_tulos_ui_update$value <-  2
-
+  tallenna_tulos_ui_launch$value <- 0
+}
 }, ignoreNULL = TRUE, ignoreInit = TRUE)
 
 observe({

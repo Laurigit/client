@@ -1,6 +1,6 @@
 #getDeckStats
 #Omistaja1 <- "Lauri"
-#required_data("UID_UUSI_PELI")
+#required_data("STG_PELISTATSIT")
 getVSStatsHtml <- function(UID_UUSI_PELI, Omistaja1, input_Peli_ID) {
 
   stat <- UID_UUSI_PELI[Peli_ID == input_Peli_ID, .(Prediction = round(Prediction, 2) * 100,
