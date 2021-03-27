@@ -48,7 +48,7 @@ kuvaajadata <- ssCols[,. (Tilanne, Ennuste, peliNo = seq_len(.N))]
 bindaa <- rbind(nollarivi, kuvaajadata)
 
 
-melttaa <- melt(bindaa, id.vars = "peliNo", measure.vars = c("Tilanne", "Ennuste") )
+melttaa <- melt.data.table(bindaa, id.vars = "peliNo", measure.vars = c("Tilanne", "Ennuste") )
 melttaa[, Martin_johto := value]
 melttaa[, ottelu_id := (peliNo/2)]
 melttaa_aggr <- melttaa[ottelu_id %% 1 == 0, .(ottelu_id, value, Martin_johto, variable)]

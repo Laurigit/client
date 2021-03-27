@@ -31,7 +31,7 @@ ss_cols <- STAT_VOITTOENNUSTE[Omistaja_ID == "L" &
 ss_cols_sort <- ss_cols[order(Turnaus_NO)]
 #print(ss_cols_sort[Turnaus_NO == 10])
 
-melttaa <- melt(ss_cols_sort, id.vars = "Turnaus_NO", measure.vars = c("VS_TN", "Aloittaja_TN",
+melttaa <- melt.data.table(ss_cols_sort, id.vars = "Turnaus_NO", measure.vars = c("VS_TN", "Aloittaja_TN",
                                                                  "Pakka_TN",
                                                                  "Ennuste"))
 melttaa[, Martin_etu := value]
