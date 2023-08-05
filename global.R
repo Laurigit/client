@@ -104,6 +104,11 @@ for(input_kansio in input_kansio_list) {
   }
 }
 
+#download files
+if (!file.exists("./www/waiting.gif")) {
+file.copy(from = "./external_files/waiting.gif", to = './www/waiting.gif',copy.mode = TRUE)
+}
+
 con <- connDB(con)
 
 print("Global.R valmis")

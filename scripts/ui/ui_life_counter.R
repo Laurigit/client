@@ -14,19 +14,19 @@ tabItem(tabName = "tab_LifeCounter",
                                justified = TRUE,
                                individual = TRUE,
                                checkIcon = list(
-                                 yes = icon("ok", 
+                                 yes = icon("ok",
                                             lib = "glyphicon"),
                                  no = icon("remove",
                                            lib = "glyphicon"))),
-          
-          tabBox(id = "lifeBox", 
+
+          tabBox(id = "lifeBox",
                  title = NULL,
                  width = 12,
                  height = "365px",
                  tabPanel(value = "life_input",
                           title = "Input life",
-                          
-                          
+
+
                           fluidRow(
                             box(
                               fluidRow(column(width = 4,
@@ -74,13 +74,13 @@ tabItem(tabName = "tab_LifeCounter",
                                                            label = HTML("9+"),
                                                            width = '100%',
                                                            style = " font-size:250%; color: #fff; background-color: #b73338; border-color: #2e6da4; height: 100px"))
-                                       
+
                               )
                             ),
                             box(
                               fluidRow(
-                                
-                                
+
+
                                 column(width = 4,
                                        actionButton(inputId = "Deal_1",
                                                     label = "1",
@@ -196,7 +196,7 @@ tabItem(tabName = "tab_LifeCounter",
                                                              label = "0",
                                                              width = '100%',
                                                              style = "height: 100px;"))
-                                         
+
                                 )
                             ),
                             box(width = 4,
@@ -206,29 +206,29 @@ tabItem(tabName = "tab_LifeCounter",
                                                            justified = TRUE,
                                                            individual = TRUE,
                                                            label = "Input type",
-                                                           choices = c("Life", 
-                                                                       "Turn"), 
+                                                           choices = c("Life",
+                                                                       "Turn"),
                                                            status = "primary",
                                                            checkIcon = list(
-                                                             yes = icon("ok", 
+                                                             yes = icon("ok",
                                                                         lib = "glyphicon"),
                                                              no = icon("remove",
                                                                        lib = "glyphicon")))),
                                 fluidRow(
-                                  
-                                  radioGroupButtons(inputId = "isMyTurn", 
+
+                                  radioGroupButtons(inputId = "isMyTurn",
                                                     justified = TRUE,
                                                     individual = TRUE,
-                                                    choiceNames = c("My turn", 
-                                                              "Opponent turn"), 
+                                                    choiceNames = c("My turn",
+                                                              "Opponent turn"),
                                                     choiceValues = c(TRUE, FALSE),
                                                     status = "primary",
                                                     checkIcon = list(
-                                                      yes = icon("ok", 
+                                                      yes = icon("ok",
                                                                  lib = "glyphicon"),
                                                       no = icon("remove",
                                                                 lib = "glyphicon")))
-                                  
+
                                 ),
                                 fluidRow(
                                   radioGroupButtons(
@@ -236,13 +236,13 @@ tabItem(tabName = "tab_LifeCounter",
                                     justified = TRUE,
                                     individual = TRUE,
                                     checkIcon = list(
-                                      yes = icon("ok", 
+                                      yes = icon("ok",
                                                  lib = "glyphicon"),
                                       no = icon("remove",
                                                 lib = "glyphicon")),
-                                    
-                                    choiceNames = c("Main phase", 
-                                                              "End step"), 
+
+                                    choiceNames = c("Main phase",
+                                                              "End step"),
                                     choiceValues = c(FALSE, TRUE),
                                       status = "primary")),
                                 fluidRow(actionButton(inputId = "save_9_damage",
@@ -252,31 +252,9 @@ tabItem(tabName = "tab_LifeCounter",
                           )),
                  tabPanel(value = "waiting_panel",
                           title = "Waiting",
-                          
-                          
-                          fluidRow(
-                            column(width = 3,
-                                   actionBttn(inputId = "Lifegain",
-                                              label = "Lifeloss selected",
-                                              style = "material-flat",
-                                              size = "md",
-                                              color = "primary",
-                                              block = TRUE)),
-                            box(column(width = 6,
-                                       actionBttn(inputId = "Deal_Non_combat",
-                                                  label = "Non-combat damage",
-                                                  style = "material-flat",
-                                                  size = "md",
-                                                  color = "warning",
-                                                  block = TRUE,
-                                                  no_outline = TRUE))),
-                            column(width = 3,
-                                   actionBttn(inputId = "Reverse_source",
-                                              label = "Reverse source",
-                                              style = "material-flat",
-                                              size = "lg",
-                                              color = "danger",
-                                              block = TRUE)))
+
+
+                          fluidRow(img(src="waiting.gif", align = "left",height='400px',width='800px'))
                  ),
                  tabPanel(value = "dmg_rows_panel",
                           title = "damage rows",
@@ -287,48 +265,48 @@ tabItem(tabName = "tab_LifeCounter",
                           fluidRow(
                             dataTableOutput("damage_rows_dt")
                           )
-                          
+
                           )
                  ))),
-          
+
         #  fluidRow(h3(textOutput("debug_text"))),
-          
+
           uiOutput(outputId = "life_total_row"),
         fluidRow(
-          
+
           column(4,
-                 
+
                  actionButton(inputId = "ab_Vaihda_vuoro",
                               label =   "End turn",
                               style = "font-size:250%; color: #fff; background-color: #FF007F; border-color: #2e6da4; height: 87px;",
                               width = '100%')),
           column(2,
-                 
+
                  actionButton(inputId = "ab_Vaihda_vuoro_virhe",
                               label = HTML("End turn <br> add mistake"),
                               style = "font-size:150%; color: #fff; background-color: #000080; border-color: #2e6da4; height: 87px;",
                               width = '100%')
           ),
-          
-          
-          
+
+
+
           column(2,
-              
+
                    actionButton(inputId = "ab_Undo",
                                 label = HTML("Undo input <br> (not delete)"),
                                 style = "font-size:150%; color: #fff; background-color: #000080; border-color: #2e6da4; height: 87px;",
                                 width = '100%')
-                   
-                 
+
+
           ),
           column(4,
                  #tähä ui output
                  uiOutput("dynamic_turn_box")
-                 
+
           )
         )
-          
-          
-         
+
+
+
         )
 )
