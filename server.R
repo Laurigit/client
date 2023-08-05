@@ -61,6 +61,8 @@ shinyServer(function(input, output, session) {
     STG_PELISTATSIT$data <- paivittyva_statsi()
     print(  STG_PELISTATSIT$data )
   })
+
+  required_data("STAT_VOITTOENNUSTE", force_update = TRUE)
   #load_scripts.R
  # print(session$clientData)
 
