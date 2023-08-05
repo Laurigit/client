@@ -221,7 +221,9 @@ observeEvent(input$backSpace, {
 
 observe({
   #Amount damage should be the only thing triggering this
+
   req(amount_DMG_reactive$dmg)
+  req(eR_Peli_ID())
   input_TSID <- isolate(turnData$turn)
   isolate(
     if(lifegain_DMG_reactive$Lifegain == TRUE) {
@@ -236,6 +238,7 @@ observe({
   #jos on menossa damagen erityisfiksaus, niin ota turni inputeista
   if (fix_life$enabled == TRUE) {
     #check who started
+
     Aloittaja_all <- getAloittaja(STG_PELISTATSIT$data, eR_Peli_ID())
     Aloittaja <- Aloittaja_all$Aloittaja_NM
   #  print(session$user)

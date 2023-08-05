@@ -75,9 +75,7 @@ aloittajaNo <- eR_Peli_Aloittaja$a
 
 
 
-  STG_PELISTATSIT$data[Peli_ID == input_Peli_ID,
-                  ':=' (Voittaja = ifelse(Omistaja_ID == "L", 1 - as.numeric(uusrivi[, Voittaja]), as.numeric(uusrivi[, Voittaja])),
-                               Aloitus_DT = as.POSIXct(uusrivi[, Aloitus_DT]))]
+
   #assign("UID_UUSI_PELI", STG_PELISTATSIT )
 #  save(list = "UID_UUSI_PELI", file = "../common_data/UID_UUSI_PELI.RData")
 
@@ -131,6 +129,9 @@ aloittajaNo <- eR_Peli_Aloittaja$a
   tallenna_tulos_ui_update$value <-  2
   tallenna_tulos_ui_launch$value <- 0
 }
+  STG_PELISTATSIT$data[Peli_ID == input_Peli_ID,
+                       ':=' (Voittaja = ifelse(Omistaja_ID == "L", 1 - as.numeric(uusrivi[, Voittaja]), as.numeric(uusrivi[, Voittaja])),
+                             Aloitus_DT = as.POSIXct(uusrivi[, Aloitus_DT]))]
 }, ignoreNULL = TRUE, ignoreInit = TRUE)
 
 observe({

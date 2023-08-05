@@ -59,12 +59,46 @@ shinyServer(function(input, output, session) {
   STG_PELISTATSIT <- reactiveValues(data = data.table(dbSelectAll("UID_UUSI_PELI", con)))
   observe({
     STG_PELISTATSIT$data <- paivittyva_statsi()
-    print(  STG_PELISTATSIT$data )
+
   })
 
   required_data("STAT_VOITTOENNUSTE", force_update = TRUE)
+  updatedTempData<- reactiveValues(a = 0)
+  eR_Peli_ID <- reactive({
+
+    #DEPENDENCY
+    select_laurin_pakka$value
+    select_martin_pakka$value
+    updatedTempData$a
+
+    input$luo_peleja
+    #############
+
+    if (!is.null(select_laurin_pakka$value) & !is.null(select_martin_pakka$value)) {
+
+      #select_laurin_pakka <- NULL
+      #select_martin_pakka <- NULL
+      # select_laurin_pakka$value <- 1
+      # select_martin_pakka$value <-9
+      required_functions("getUusi_Peli_ID")
+      #required_data(c("STG_PELISTATSIT"))
+
+      normiToiminto <- getUusi_Peli_ID(STG_PELISTATSIT$data,
+                                       select_laurin_pakka$value,
+                                       select_martin_pakka$value)
+      wc(data.table(Peli_ID = normiToiminto), "../common_data/", "next_game_ID" )
+
+      # message("palautettu uusi peli id ", normiToiminto)
+      return(normiToiminto)
+    } else {
+      NApalautus <- NA
+      return(NApalautus)
+    }
+
+  })
+
   #load_scripts.R
- # print(session$clientData)
+
 
   inputLoop <- reactiveValues(timeStamp = now(),
                               allow_change = TRUE,
@@ -117,15 +151,10 @@ shinyServer(function(input, output, session) {
     melttaus1[, diff := var(value), by = variable]
     muuttunut_input <- melttaus1[diff != 0][1, as.character(variable)]
     #jos ei mikaan ei muuttunu, niin ei muuteta UI:ta
-  #  print("uus input")
-  #  print(muuttunut_input)
-  #  print("vanha input")
-  #  print(isolate(inputLoop$which_input_changed))
-  #  print("session")
-  #  print(isolate(session$user))
+
     erotus <- difftime(now(), isolate(inputLoop$timeStamp))
 
-  #  print(erotus)
+
     isolate(if(is.na(muuttunut_input)){
     #  print("denied, ei muutoksia")
       inputLoop$allow_change <- FALSE

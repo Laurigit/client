@@ -1,44 +1,4 @@
-eR_Peli_ID <- eventReactive(c(select_laurin_pakka$value,
-                              select_martin_pakka$value,
-                              updatedTempData$a,
 
-                              input$luo_peleja),{
-
-                                if (!is.null(select_laurin_pakka$value) & !is.null(select_martin_pakka$value)) {
-
-                                  #select_laurin_pakka <- NULL
-                                  #select_martin_pakka <- NULL
-                                  # select_laurin_pakka$value <- 1
-                                  # select_martin_pakka$value <-9
-                                  required_functions("getUusi_Peli_ID")
-                                  #required_data(c("STG_PELISTATSIT"))
-
-                                  normiToiminto <- getUusi_Peli_ID(STG_PELISTATSIT$data,
-                                                                  select_laurin_pakka$value,
-                                                                  select_martin_pakka$value)
-                                  wc(data.table(Peli_ID = normiToiminto), "../common_data/", "next_game_ID" )
-
-                                 # message("palautettu uusi peli id ", normiToiminto)
-                                  return(normiToiminto)
-                                } else {
-                                  NApalautus <- NA
-                                  return(NApalautus)
-                                }
-                                # else {
-                                #   #print("JOS OLET TÄÄLLÄ, NIIN TÄMÄ OSA KOODISTA TUSKIN TOIMII. TARKISTA ONKO TEMPDATA STORAGESSSA OLEVA PELI_ID OLEMASSA")
-                                #   required_data(c("STG_PELISTATSIT", "ADM_TEMP_DATA_STORAGE"))
-                                #
-                                #   keskenPeliData <- ADM_TEMP_DATA_STORAGE
-                                #
-                                #  # message("eR_PELI_ID ", keskenPeliData)
-                                #
-                                #   P1 <- keskenPeliData[muuttuja == "Laurin_pakka", arvo]
-                                #   P2 <- keskenPeliData[muuttuja == "Martin_pakka", arvo]
-                                #   alkuLataus <- getPeli_ID_from_pakat(P1, P2, STG_PELISTATSIT)
-                                #
-                                #   return(alkuLataus)
-                                # }
-                              }, ignoreInit = FALSE, ignoreNULL = FALSE)
 
 
 #jos alotetaan life counter game, niin nollaa temp_data_storage
@@ -182,11 +142,12 @@ observeEvent(input$havioPeli, {
 
 
 tempDataLehtysLaskuri <- reactiveValues(a = 0)
-updatedTempData<- reactiveValues(a = 0)
+
 
 
 #KOLME UI KOMPONENTTIA KOPIPASTETTY. TEE MUUTOKSET MOLEMPIIN
 output$PakkaLeftBox <- renderUI({
+
   if (!is.na(eR_Peli_ID())) {
     result <- getDeckStats("Lauri", eR_UID_UUSI_PELI(), eR_Peli_ID())
     result_data <- result$data
