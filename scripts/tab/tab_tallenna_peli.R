@@ -129,9 +129,9 @@ aloittajaNo <- eR_Peli_Aloittaja$a
   tallenna_tulos_ui_update$value <-  2
   tallenna_tulos_ui_launch$value <- 0
 }
-  STG_PELISTATSIT$data[Peli_ID == input_Peli_ID,
-                       ':=' (Voittaja = ifelse(Omistaja_ID == "L", 1 - as.numeric(uusrivi[, Voittaja]), as.numeric(uusrivi[, Voittaja])),
-                             Aloitus_DT = as.POSIXct(uusrivi[, Aloitus_DT]))]
+  #STG_PELISTATSIT$data[Peli_ID == input_Peli_ID,
+  #                     ':=' (Voittaja = ifelse(Omistaja_ID == "L", 1 - as.numeric(uusrivi[, Voittaja]), as.numeric(uusrivi[, Voittaja])),
+  #                           Aloitus_DT = as.POSIXct(uusrivi[, Aloitus_DT]))]
 }, ignoreNULL = TRUE, ignoreInit = TRUE)
 
 observe({
@@ -322,8 +322,25 @@ observe({
 #observe if tallenna is enabled
 observe({
 
+  validate_kasikortit <- FALSE
+  if(input$radio_voittaja == 0 & input$slider_laurin_lifet == 0) {
+    validate <- FALSE
+  } else if (input$radio_voittaja == 1 & input$slider_martin_lifet == 0) {
+    validate <- FALSE
+  } else {
+    validate <- TRUE
+  }
+
   if(!is.null(slider_martin_kasikorit$value) & !is.null(slider_laurin_kasikortit$value)) {
-  if ( slider_martin_kasikorit$value >= 0 &  slider_laurin_kasikortit$value >= 0) {
+  if ( slider_martin_kasikorit$value >= 0 &  session$user == "Martti") {
+  #if ( slider_martin_kasikorit$value >= 0 &  slider_laurin_kasikortit$value >= 0) {
+
+    validate_kasikortit <- TRUE
+  } else if ( slider_laurin_kasikortit$value >= 0 & session$user == "Lauri") {
+    validate_kasikortit <- TRUE
+  }
+
+  if (validate  == TRUE &  validate_kasikortit == TRUE ) {
     shinyjs::enable("tallenna_tulos")
   } else {
 
