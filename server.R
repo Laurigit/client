@@ -1,4 +1,7 @@
 
+
+
+
 ################
 #Life counter data
 #turn = TSID, Atual trn = turn in magic game.
@@ -51,7 +54,13 @@ user_logged <- reactiveValues(count = 0)
 
 
 shinyServer(function(input, output, session) {
+  paivittyva_statsi <- my_reactivePoll(session, "UID_UUSI_PELI", "SELECT * FROM UID_UUSI_PELI", 2500, con)
 
+  STG_PELISTATSIT <- reactiveValues(data = data.table(dbSelectAll("UID_UUSI_PELI", con)))
+  observe({
+    STG_PELISTATSIT$data <- paivittyva_statsi()
+    print(  STG_PELISTATSIT$data )
+  })
   #load_scripts.R
  # print(session$clientData)
 
@@ -199,176 +208,16 @@ updateTabItems(session,"sidebarmenu", "tab_overlay")
 
 
 
- # load("./external_files/tilastoAsetukset.R")
-  #load("./external_files/saavutusAsetukset.R")
-
-
-  # output$results = renderPrint({
-  #   intToUtf8(input$mydata[[1]])
-  # })
-
-
-  # observeEvent(input$mydata, {
-  #   ekakirjain <- str_sub(intToUtf8(input$mydata[[1]], 1, 1))
-  #   print(ekakirjain)
-  #   if (ekakirjain == "x") {
-  #     shinyjs::hide(id = "hideBox")
-  #   } else {_a
-  #     shinyjs::show(id = "hideBox")
-  #   }
-  # })
-
-  # local_keymap <- reactiveValues(env = "normal", aika = now(), prev_key = "")
-  #
   # observe({
-  #   print("ENVI NORMAALIKSI")
-  #   take_dep <- turnData$turn
-  #   take_dep <- damage_data$data
-  #   local_keymap$env <- "normal"
-  #   temp <- isolate(keymap$data)
-  #   temp[, Nappain := ""]
-  #   keymap$data <- temp
+  #
+  #   follow_uid_uusi_peli
+  #   required_data("STG_PELISTATSIT", force_update = TRUE)
+  #   #tun once for each players.
+  # print("updated pelistatsit from db")
+  # print(STG_PELISTATSIT[is.na(Voittaja)])
+  #     updatedTempData$a <- isolate(updatedTempData$a + 1)
   # })
 
-  # observeEvent(input$mydata, {
-  #   required_data("ADM_KEY_MAP")
-  #   aakkoPainallus_input <- intToUtf8(input$mydata[[1]])
-  #   isolate(enviro <- local_keymap$env)
-  #   isolate(enviro_aikaEro <- as.numeric(now()) - as.numeric(local_keymap$aika))
-  #   local_keymap$aika <- now()
-  #   print("AIKAERo")
-  #   isolate(print(enviro_aikaEro))
-  #   if (local_keymap$prev_key != aakkoPainallus_input | enviro_aikaEro > 1) {
-  #
-  #     local_keymap$prev_key <- aakkoPainallus_input
-  #     painaja_uus <- session$user
-  #   #  tempData <-  keymap$data
-  #   #  tempData[Painaja == painaja_uus, ':=' (aakkoPainallus = aakkoPainallus_input,
-  #                                             #  Aika = now())]
-  #   #  tempData <-  keymap$data
-  #    # my_keypress <- tempData[Painaja == session$user, aakkoPainallus]
-  #     toiminnot <- ADM_KEY_MAP[Nappain == aakkoPainallus_input]
-  #     print("ekavaihe")
-  #     print(toiminnot)
-  #     if (nrow(toiminnot) > 0 ){
-  #
-  #       if (enviro_aikaEro > 20) {
-  #
-  #         local_keymap$env <- "normal"
-  #         enviro <- "normal"
-  #         print("envi muuttu aikaeron takia normaaliksi")
-  #       }
-  #
-  #       my_action_row <- toiminnot[env == enviro]
-  #       print("envin jalkeen action row")
-  #       print(my_action_row)
-  #       print("envi oli")
-  #       isolate(print(local_keymap$env))
-  #       if (nrow(my_action_row) > 0) {
-  #         my_action_row[, ':=' (Painaja = painaja_uus,
-  #                  PainoAika = now())]
-  #
-  #           vihunData <-  keymap$data[Painaja != painaja_uus]
-  #           print(my_action_row)
-  #           print(vihunData)
-  #           uusData <- rbind(my_action_row, vihunData)
-  #           keymap$data <- uusData
-  #       }
-  #     }
-  #   } else {
-  #     warning("painettu sama nappi")
-  #   }
-  # })
-
-
-  #envs are "normal", shift, deal9+, lose9+
-
-
-  # observe({
-  #   req(keymap$data)
-  # if (session$user %in% c("Lauri", "Martti")) {
-  #   my_action_row <- keymap$data[Painaja == session$user]
-  #
-  #   #do we need validation
-  #   print("toka vaihe")
-  #   print(my_action_row)
-  #
-  #     if (my_action_row[, valid_pair] != "") {
-  #       #we need validation, check opponent input
-  #       my_valid_pair <- my_action_row[, valid_pair]
-  #       opp_button_id <- keymap$data[Painaja != session$user & session$user %in% c("Lauri", "Martti"), button_id]
-  #       Opp_time <- keymap$data[Painaja != session$user & session$user %in% c("Lauri", "Martti"), PainoAika]
-  #       my_time <- my_action_row[, PainoAika]
-  #       aikaErotus <- abs(difftime(my_time, Opp_time))
-  #       warning(paste0("näppäinten ero oli", aikaErotus))
-  #       if (opp_button_id == my_valid_pair & aikaErotus < 1.5) {
-  #
-  #         accept_input <- TRUE
-  #       } else {
-  #         accept_input <- FALSE
-  #       }
-  #     } else if (keymap$data[which.max(PainoAika), Painaja] != session$user) {
-  #       #we dont need validation, but need to check if I pressed the button
-  #       accept_input <- FALSE
-  #     } else {
-  #       accept_input <- TRUE
-  #     }
-  #
-  #
-  #   if (accept_input == TRUE) {
-  #     #click actionutton or something else
-  #     #if no button id, then dont press anything. change environment only if
-  #
-  #     if (nchar(my_action_row[, button_id]) > 0) {
-  #       if (my_action_row[, type] == "") {
-  #
-  #       #  print("enabled status")
-  #       #  print(isolate(my_action_row[, button_id]))
-  #         #if button is enabled or we dont monitor it, then click it
-  #         isolate(if (is.null(actButtonStatus[[my_action_row[, button_id]]])) {
-  #           print("Nappi painettu")
-  #
-  #
-  #           odotusaika <-  max(as.numeric(last_simulated_click$time + 0 - now()), 0)
-  #           last_simulated_click$time <- now()
-  #           Sys.sleep(odotusaika)
-  #
-  #           click(my_action_row[, button_id])
-  #         } else {
-  #           if (actButtonStatus[[my_action_row[, button_id]]] == TRUE) {
-  #             print("Nappi painettu")
-  #             #nappi oli enabled
-  #             odotusaika <-  max(as.numeric(last_simulated_click$time + 0 - now()), 0)
-  #             last_simulated_click$time <- now()
-  #             Sys.sleep(odotusaika)
-  #              click(my_action_row[, button_id])
-  #           }
-  #         })
-  #     } else if (my_action_row[, type] == "RadioGroupButtons") {
-  #        # browser()
-  #         group_id <- my_action_row[, button_id]
-  #         button_name <-  my_action_row[, sub_id]
-  #         curr_value <- isolate(eval(parse(text = paste0("input$", group_id))))
-  #         #check if button is selected
-  #         selected <- button_name %in% curr_value
-  #         if (selected == TRUE) {
-  #           new_value <- curr_value[!curr_value %in% button_name]
-  #         } else {
-  #           new_value <- c(curr_value, button_name)
-  #         }
-  #         updateRadioGroupButtons(session, group_id, selected = new_value)
-  #
-  #       }
-  #     }
-  #     #set environment
-  #    isolate(if (my_action_row[, set_env] != local_keymap$env & my_action_row[, set_env]  != "") {
-  #      print("UUS ENVI ON")
-  #       local_keymap$env <- my_action_row[, set_env]
-  #       isolate(print(local_keymap$env))
-  #     })
-  #   }
-  # }
-  # })
 
   click_groupButton <- function(session, group_id, button_name) {
     #curr_value <- c("kol", "ys", "kas")

@@ -1,5 +1,4 @@
 
-
 required_data("ADM_DI_HIERARKIA")
 updateData("SRC_TEMP_DATA_STORAGE", ADM_DI_HIERARKIA, input_env = globalenv())
 
@@ -30,8 +29,9 @@ output$mulliganiSlideriMartti<-renderUI({
 })
 
 output$divariRadio_out <- renderUI({
-  required_data("STG_PELISTATSIT")
-  divarit_ilman_peleja <- STG_PELISTATSIT[is.na(Voittaja),.N,by=Divari]
+
+
+  divarit_ilman_peleja <- STG_PELISTATSIT$data[is.na(Voittaja),.N,by=Divari]
   radioButtons("divariRadio", "Division",
                c("All", sort(divarit_ilman_peleja[,Divari])), inline = TRUE)
 })

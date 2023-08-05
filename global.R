@@ -20,6 +20,7 @@ if (!dir.exists("./dmg_turn_files/")) {
 
 
 #library(config)
+library(RMySQL)
 library(shinyWidgets)
 library(shiny)
 library(shinydashboard)
@@ -48,6 +49,7 @@ library(reshape2)
 library(grid)
 library(gridExtra)
 library(beepr)
+
 #library(extendShinyjs)
 #library(glob2rx)
 #library(shinythemes)
@@ -87,7 +89,8 @@ sourcelist[, kansio := ifelse(str_sub(kansio, -2, -1) == ".R", "root", kansio)]
 
 input_kansio_list <- c("utility",
                        "solution_functions",
-                       "UID")
+                       "UID"
+                       )
 for(input_kansio in input_kansio_list) {
   dir_list <- sourcelist[kansio == input_kansio, polku]
   for(filename in dir_list) {
@@ -101,6 +104,6 @@ for(input_kansio in input_kansio_list) {
   }
 }
 
-
+con <- connDB(con)
 
 print("Global.R valmis")

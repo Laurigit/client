@@ -32,7 +32,7 @@ observeEvent(input$tallenna_tulos, {
 
 
 observeEvent(tallenna_tulos_ui_launch$value, {
-  browser()
+
 if (tallenna_tulos_ui_launch$value ==  2) {
   input_Peli_ID <- eR_Peli_ID()
   #vuoroarviolasku
@@ -75,11 +75,11 @@ aloittajaNo <- eR_Peli_Aloittaja$a
 
 
 
-  STG_PELISTATSIT[Peli_ID == input_Peli_ID,
+  STG_PELISTATSIT$data[Peli_ID == input_Peli_ID,
                   ':=' (Voittaja = ifelse(Omistaja_ID == "L", 1 - as.numeric(uusrivi[, Voittaja]), as.numeric(uusrivi[, Voittaja])),
                                Aloitus_DT = as.POSIXct(uusrivi[, Aloitus_DT]))]
-  assign("UID_UUSI_PELI", STG_PELISTATSIT )
-  save(list = "UID_UUSI_PELI", file = "../common_data/UID_UUSI_PELI.RData")
+  #assign("UID_UUSI_PELI", STG_PELISTATSIT )
+#  save(list = "UID_UUSI_PELI", file = "../common_data/UID_UUSI_PELI.RData")
 
   #tyhjennä tempdata
   wc(uusrivi, "../common_data/", paste0("Result_", input_Peli_ID))

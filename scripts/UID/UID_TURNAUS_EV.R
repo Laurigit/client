@@ -1,7 +1,7 @@
 
 
 UID_TURNAUS_EV <- function(input_STG_PELISTATSIT, STAT_VOITTOENNUSTE)  {
-  #input_STG_PELISTATSIT <- STG_PELISTATSIT
+
 
   peliData_ja_pfi <- input_STG_PELISTATSIT[STAT_VOITTOENNUSTE, on = c("Peli_ID", "Omistaja_ID")][Omistaja_ID == "M"]
 

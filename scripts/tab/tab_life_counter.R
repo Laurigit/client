@@ -236,7 +236,7 @@ observe({
   #jos on menossa damagen erityisfiksaus, niin ota turni inputeista
   if (fix_life$enabled == TRUE) {
     #check who started
-    Aloittaja_all <- getAloittaja(STG_PELISTATSIT, eR_Peli_ID())
+    Aloittaja_all <- getAloittaja(STG_PELISTATSIT$data, eR_Peli_ID())
     Aloittaja <- Aloittaja_all$Aloittaja_NM
   #  print(session$user)
     if (Aloittaja == session$user) {
@@ -667,7 +667,7 @@ if(turnData$turn > 0) {
     setActionButtonStatus("disable", "ab_pakita_endille")
   #  shinyjs::disable("ab_Vaihda_vuoro_virhe")
   } else {
-     Aloittaja_all <- getAloittaja(STG_PELISTATSIT, eR_Peli_ID())
+     Aloittaja_all <- getAloittaja(STG_PELISTATSIT$data, eR_Peli_ID())
      Aloittaja <- Aloittaja_all$Aloittaja_NM
     if (Aloittaja == session$user) {
       I_start <- TRUE

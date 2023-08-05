@@ -11,9 +11,9 @@ eR_Peli_ID <- eventReactive(c(select_laurin_pakka$value,
                                   # select_laurin_pakka$value <- 1
                                   # select_martin_pakka$value <-9
                                   required_functions("getUusi_Peli_ID")
-                                  required_data(c("STG_PELISTATSIT"))
+                                  #required_data(c("STG_PELISTATSIT"))
 
-                                  normiToiminto <- getUusi_Peli_ID(STG_PELISTATSIT,
+                                  normiToiminto <- getUusi_Peli_ID(STG_PELISTATSIT$data,
                                                                   select_laurin_pakka$value,
                                                                   select_martin_pakka$value)
                                   wc(data.table(Peli_ID = normiToiminto), "../common_data/", "next_game_ID" )
@@ -80,13 +80,13 @@ wc(tempData, "../common_data/", "temp_data_storage" )
 #arvopeli
 observeEvent(input$arvo_peli,{
 #input$divariRadio <- 1
-  required_data("STG_PELISTATSIT")
+  #required_data("STG_PELISTATSIT")
  # browser()
   # input <- NULL
   # input$divariRadio <-1
-  arvottu_peli_id <- getRandomPeli_ID(STG_PELISTATSIT, input$divariRadio)
+  arvottu_peli_id <- getRandomPeli_ID(STG_PELISTATSIT$data, input$divariRadio)
 
-  paivitaSliderit(arvottu_peli_id,session)
+  paivitaSliderit(arvottu_peli_id,session, STG_PELISTATSIT$data)
 })
 
 
@@ -94,9 +94,9 @@ observeEvent(input$arvo_peli,{
 
 eR_Peli_Aloittaja <- reactiveValues(a = -1, b = -4)
 observe({
-required_data("STG_PELISTATSIT")
+#required_data("STG_PELISTATSIT")
 
-  pelidata <- STG_PELISTATSIT[1 != 0]
+  pelidata <- STG_PELISTATSIT$data[1 != 0]
   result <- pelidata[Peli_ID == eR_Peli_ID(), .(Aloittaja, Omistaja_ID)][Omistaja_ID == "M", Aloittaja]
 
   eR_Peli_Aloittaja$a <- result
@@ -112,10 +112,10 @@ eR_UID_UUSI_PELI <- reactive({
   #create dependency
  # required_data(c("ADM_PELIT", "INT_PFI", "STG_PAKAT", "STG_OMISTAJA", "STAT_VOITTOENNUSTE", "STAT_CURRENT_PAKKA"))
 #required_functions("UID_UUSI_PELI")
-  required_data("STG_PELISTATSIT")
+  #required_data("STG_PELISTATSIT")
 
-
-  return(STG_PELISTATSIT)
+tulos <- STG_PELISTATSIT$data
+  return(tulos)
 })
 
 eR_UID_PAKKA <- eventReactive(c(input$numeric_MA_valinta,
@@ -125,8 +125,8 @@ eR_UID_PAKKA <- eventReactive(c(input$numeric_MA_valinta,
                                   # input$radio_bo_mode<- FALSE
                                   # input$radio_pfi_mode <- FALSE
 required_functions("UID_PAKKA")
-required_data(c("STG_PELISTATSIT", "INT_PFI"))
-result <-  UID_PAKKA(STG_PELISTATSIT,
+required_data(c("INT_PFI"))
+result <-  UID_PAKKA(STG_PELISTATSIT$data,
                                                         INT_PFI,
                                                         input_MA_length = input$numeric_MA_valinta,
                                                         input_BO_mode  = input$radio_bo_mode,
@@ -141,7 +141,7 @@ eR_UID_PAKKA_VS <- eventReactive(c(input$numeric_MA_valinta,
                                   # input$radio_bo_mode<- FALSE
                                   # input$radio_pfi_mode <- FALSE
                                   required_functions("UID_PAKKA_VS")
-                                  result <-  UID_PAKKA_VS(STG_PELISTATSIT,
+                                  result <-  UID_PAKKA_VS(STG_PELISTATSIT$data,
                                                        INT_PFI,
                                                        input_MA_length = input$numeric_MA_valinta,
                                                        input_BO_mode  = input$radio_bo_mode,
@@ -150,9 +150,9 @@ eR_UID_PAKKA_VS <- eventReactive(c(input$numeric_MA_valinta,
  })
 
 eR_UID_TURNAUS_EV <- eventReactive(tallenna_tulos_ui_update$value, {
-  required_data(c("STAT_VOITTOENNUSTE", "STG_PELISTATSIT"))
+  required_data(c("STAT_VOITTOENNUSTE"))
   required_functions("UID_TURNAUS_EV")
-  results <- UID_TURNAUS_EV(STG_PELISTATSIT, STAT_VOITTOENNUSTE)
+  results <- UID_TURNAUS_EV(STG_PELISTATSIT$data, STAT_VOITTOENNUSTE)
   return(results)
 }, ignoreNULL = FALSE, ignoreInit = FALSE)
 
@@ -167,15 +167,15 @@ eV_UID_MALLI_KOMPONENTIT <- reactive( {
 
 
 observeEvent(input$tasuriPeli, {
-required_data(c("STG_PELISTATSIT"))
-  uusPeliID <- getTasuriPeli(STG_PELISTATSIT)
-  paivitaSliderit(uusPeliID, session)
+
+  uusPeliID <- getTasuriPeli(STG_PELISTATSIT$data)
+  paivitaSliderit(uusPeliID, session, STG_PELISTATSIT$data)
 })
 
 observeEvent(input$havioPeli, {
-  required_data(c("STG_PELISTATSIT"))
-  uusPeliID <- getTasuriPeli(STG_PELISTATSIT, reverse = TRUE)
-  paivitaSliderit(uusPeliID, session)
+
+  uusPeliID <- getTasuriPeli(STG_PELISTATSIT$data, reverse = TRUE)
+  paivitaSliderit(uusPeliID, session, STG_PELISTATSIT$data)
 })
 
 
