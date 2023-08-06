@@ -68,7 +68,7 @@ sidebar <- dashboardSidebar(
 )
 
 #RUNKO
-dashboardPage(
+dashboardPage(title="MTG: Life counter",
 
 
   #dashboardHeader(title = paste0("run_mode = ", GLOBAL_test_mode, " ", textOutput('blow_timer')),
