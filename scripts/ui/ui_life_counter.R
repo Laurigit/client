@@ -2,7 +2,11 @@ tabItem(tabName = "tab_LifeCounter",
         fluidPage(
          #fluidRow(    box(id = "hideBox", title = "SWITH", background = "maroon")),
         #  fluidRow(  verbatimTextOutput("results")),
-          fluidRow(plotOutput(outputId = "lifeChart")),
+          tabBox(id = "lifes_or_waiting", title = NULL, width = 12, height = "340px",
+                 tabPanel(value = "chartti2", title = NULL,
+                    fluidRow(plotOutput(outputId = "lifeChart"))),
+                 tabPanel(value = "waiting2", title = NULL,
+                          fluidRow(img(src="waiting.gif", align = "left",height='400px',width='800px')))),
           checkboxGroupButtons(inputId = "dmg_settings",
                                label  = NULL,
                                choices = c("Non-combat damage",
@@ -253,8 +257,8 @@ tabItem(tabName = "tab_LifeCounter",
                  tabPanel(value = "waiting_panel",
                           title = "Waiting",
 
+                          uiOutput("waiting_image")
 
-                          fluidRow(img(src="waiting.gif", align = "left",height='400px',width='800px'))
                  ),
                  tabPanel(value = "dmg_rows_panel",
                           title = "damage rows",

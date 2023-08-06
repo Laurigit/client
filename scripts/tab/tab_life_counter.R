@@ -301,6 +301,7 @@ observe({
 #observeEvent damage_data$data
 #handles changed in damagedate
 observe({
+
   print("dmgdata triggereds")
   #jos muuttuu, niin validoi ja kirjota, jos validi
  # print(damage_data$data)
@@ -328,6 +329,7 @@ print("isolate(templife$count_missing_rows")
     waiting_opponent_input$waiting <- FALSE
     opponent_waiting_my_input$waiting <- FALSE
     updateTabsetPanel(session, "lifeBox", selected = "life_input")
+    updateTabsetPanel(session, "lifes_or_waiting", selected = "chartti2")
   } else if (isolate(templife$count_missing_rows == 2)) {
     #error
     #show both players input and let them choose the correct.
@@ -655,6 +657,45 @@ take_dep <-  local_turn$value
 
 }, priority = -100)
 
+
+waiting_timer <- reactiveValues(data = FALSE, counter = 0)
+
+observeEvent(waiting_timer$counter, {
+
+  templife <- calc_life_totals(damage_data$data)
+  if (templife$count_missing_rows == 1 & opponent_waiting_my_input$waiting == TRUE) {
+    updateTabsetPanel(session, "lifes_or_waiting", selected = "waiting2")
+  }
+}, ignoreInit = TRUE)
+
+output$waiting_image <- renderUI({
+
+
+
+  if (session$user == "Lauri") {
+    kuva <-     image_file_names$Lauri
+  } else {
+    kuva <-     image_file_names$Martti
+  }
+  if (is.null(kuva)) {kuva <- "Scion of the Wild.jpg"}
+  fluidRow(img(src= kuva, align = "middle"))
+
+})
+
+observeEvent(opponent_waiting_my_input$waiting, {
+  req(opponent_waiting_my_input$waiting)
+
+
+print("alussa")
+
+  if (opponent_waiting_my_input$waiting == TRUE) {
+
+       delay(3000, waiting_timer$counter <- waiting_timer$counter + 1)
+
+    }
+
+}, ignoreInit = TRUE)
+
 #handle ui status based on turndata and life_input
 observe({
   required_data("ADM_TURN_SEQ")
@@ -881,7 +922,6 @@ observeEvent(input$editTurnOrLife, {
   }
 
 }, ignoreInit = TRUE, ignoreNULL = TRUE)
-
 
 
 

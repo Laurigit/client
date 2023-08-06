@@ -151,6 +151,7 @@ output$PakkaLeftBox <- renderUI({
   if (!is.na(eR_Peli_ID())) {
     result <- getDeckStats("Lauri", eR_UID_UUSI_PELI(), eR_Peli_ID())
     result_data <- result$data
+    image_file_names$Lauri <-  paste0(result_data$Most_same_card, ".jpg")
   #  print("output$PakkaLeftBox")
 
     #luo riippuvuus
@@ -194,6 +195,8 @@ output$PakkaLeftBox <- renderUI({
 })
 
 
+image_file_names <- reactiveValues(Lauri = NULL, Martti = NULL)
+
 output$PakkaRightBox <- renderUI({
   #luo riippuvuus
   eR_UID_UUSI_PELI()
@@ -202,7 +205,7 @@ output$PakkaRightBox <- renderUI({
   ############
   result <- getDeckStats("Martti", eR_UID_UUSI_PELI(), eR_Peli_ID())
   result_data <- result$data
-
+  image_file_names$Martti <-  paste0(result_data$Most_same_card, ".jpg")
   box(
     tags$head(tags$style(HTML('
       .boxProfileItem {
