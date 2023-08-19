@@ -16,17 +16,19 @@ print("input$start_life_counter painettu")
     "Aloitus_DT",
     "Laurin_mulligan",
     "Martin_mulligan",
-    "Peli_ID")
+    "Peli_ID",
+    "Aloittaja")
   arvot <- c(
     as.character(Aloitus_DT),
     laurin_mull,
     martin_mull,
-    Peli_ID)
+    Peli_ID,
+    eR_Peli_Aloittaja$a)
   tempData <- data.table(muuttuja = muuttujat, arvo = arvot)
 
 wc(tempData, "../common_data/", "temp_data_storage" )
     required_data("ADM_DI_HIERARKIA")
-
+    dbWriteTable(con, "TEMP_DATA_STORAGE", tempData, append = FALSE, overwrite = TRUE)
     updateData("SRC_TEMP_DATA_STORAGE", ADM_DI_HIERARKIA, input_env = globalenv())
 
     #nollaa tempdatalaskuri
@@ -55,6 +57,7 @@ observeEvent(input$arvo_peli,{
 eR_Peli_Aloittaja <- reactiveValues(a = -1, b = -4)
 observe({
 #required_data("STG_PELISTATSIT")
+req(eR_Peli_ID())
 
   pelidata <- STG_PELISTATSIT$data[1 != 0]
   result <- pelidata[Peli_ID == eR_Peli_ID(), .(Aloittaja, Omistaja_ID)][Omistaja_ID == "M", Aloittaja]

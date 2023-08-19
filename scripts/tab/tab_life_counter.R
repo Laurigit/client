@@ -675,7 +675,7 @@ take_dep <-  local_turn$value
   }
 
   dbFetch(dbSendQuery(con, paste0("DELETE FROM CURRENT_TURN WHERE Peli_ID = ", peli_id)))
-  dbWriteTable (con, "CURRENT_TURN", new_data, overwrite = TRUE, append = FALSE, row.names = FALSE)
+  dbWriteTable (con, "CURRENT_TURN", new_data, overwrite = FALSE, append = TRUE, row.names = FALSE)
   updateData("SRC_CURRENT_TURN", ADM_DI_HIERARKIA, globalenv())
 
 }, priority = -100)
