@@ -7,4 +7,5 @@ STG_CURRENT_DMG <- SRC_CURRENT_DMG[, .(DID = as.numeric(DID),
                                        Combat_dmg = as.numeric(Combat_dmg),
                                        Input_Omistaja_NM,
                                        TSID = as.numeric(TSID),
-                                       Peli_ID = as.numeric(Peli_ID))]
+                                       Peli_ID = as.numeric(Peli_ID),
+                                       dmg_timestamp = as.character())]

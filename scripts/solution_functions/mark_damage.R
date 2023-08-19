@@ -44,7 +44,8 @@ mark_damage <- function(Amount,
                         Combat_dmg,
                         Input_Omistaja_NM = input_session_user,
                         TSID = input_TSID,
-                        Peli_ID)
+                        Peli_ID,
+                        dmg_timestamp =  as.character(now(tz = "EET")))
 
   appendaa <- rbind(current_dmg, new_row)
 

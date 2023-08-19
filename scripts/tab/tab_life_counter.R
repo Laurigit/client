@@ -314,7 +314,19 @@ print("isolate(templife$count_missing_rows")
    # print("kirjotetaan csv")
     #print(damage_data$data)
     #write to csv
+
+
     wc(damage_data$data, folder = "../common_data/", "current_dmg")
+    peli_id_to_db <- isolate(eR_Peli_ID())
+
+    if (is.na(peli_id_to_db)) {
+      peli_id <- 0
+    } else {
+      peli_id <- peli_id_to_db
+    }
+
+    dbFetch(dbSendQuery(con, paste0("DELETE FROM CURRENT_DAMAGE WHERE Peli_ID = ", peli_id)))
+    dbWriteTable (con, "CURRENT_DAMAGE", damage_data$data, overwrite = FALSE, append = TRUE, row.names = FALSE)
     # write.table(x = damage_data$data,
     #             file = paste0("./dmg_turn_files/", "current_dmg.csv"),
     #             sep = ";",
@@ -634,6 +646,8 @@ observeEvent(input$ab_pakita_endille, {
 observe({
   required_data("ADM_CURRENT_TURN")
   print("localturn triggered")
+
+  req(eR_Peli_ID())
 take_dep <-  local_turn$value
 #print("writing to turn csv")
   new_row <- data.table(TSID = isolate(turnData$turn),
@@ -653,6 +667,15 @@ take_dep <-  local_turn$value
   #             row.names = FALSE,
   #             dec = ",")
   required_data("ADM_DI_HIERARKIA")
+  peli_id_to_db <- isolate(eR_Peli_ID())
+  if (is.na(peli_id_to_db)) {
+    peli_id <- 0
+  } else {
+    peli_id <- peli_id_to_db
+  }
+
+  dbFetch(dbSendQuery(con, paste0("DELETE FROM CURRENT_TURN WHERE Peli_ID = ", peli_id)))
+  dbWriteTable (con, "CURRENT_TURN", new_data, overwrite = TRUE, append = FALSE, row.names = FALSE)
   updateData("SRC_CURRENT_TURN", ADM_DI_HIERARKIA, globalenv())
 
 }, priority = -100)
@@ -1086,13 +1109,13 @@ observe({
 
       click("martti_voitti")
       slider_vuoroarvio$value <- update_value
-      updateSliderInput(session,
-                        inputId = "slider_vuoroarvio", value = update_value)
+     # updateSliderInput(session,
+    #                    inputId = "slider_vuoroarvio", value = update_value)
     } else {
       click("lauri_voitti")
       slider_vuoroarvio$value <- update_value
-      updateSliderInput(session,
-                        inputId = "slider_vuoroarvio", value = update_value)
+    #  updateSliderInput(session,
+   #                     inputId = "slider_vuoroarvio", value = update_value)
     }
   }
 })
