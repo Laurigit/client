@@ -219,6 +219,48 @@ observeEvent(input$backSpace, {
    complex_input$value <- str_sub(complex_input$value, 1, -2)
 })
 
+
+#jos on vihun vuoro ja combat damage, non-lifelink päällä, niin disabloi dealit
+
+observe({
+  req( eR_Peli_ID())
+  Aloittaja_all <- getAloittaja(STG_PELISTATSIT$data, eR_Peli_ID())
+  Aloittaja <- Aloittaja_all$Aloittaja_NM
+  if (Aloittaja == session$user) {
+    I_start <- TRUE
+  } else {
+    I_start <- FALSE
+  }
+
+is_my_turn <- I_start == ADM_TURN_SEQ[TSID == turnData$turn, Starters_turn]
+  if (is_my_turn == FALSE & lifegain_DMG_reactive$Lifegain == FALSE & combat_DMG_reactive$combat_dmg == TRUE) {
+  #disabloi dealit
+  shinyjs::disable("Deal_1")
+    shinyjs::disable("Deal_2")
+    shinyjs::disable("Deal_3")
+    shinyjs::disable("Deal_4")
+    shinyjs::disable("Deal_5")
+    shinyjs::disable("Deal_6")
+    shinyjs::disable("Deal_7")
+    shinyjs::disable("Deal_8")
+    shinyjs::disable("Deal_9")
+  } else {
+
+    shinyjs::enable("Deal_1")
+    shinyjs::enable("Deal_2")
+    shinyjs::enable("Deal_3")
+    shinyjs::enable("Deal_4")
+    shinyjs::enable("Deal_5")
+    shinyjs::enable("Deal_6")
+    shinyjs::enable("Deal_7")
+    shinyjs::enable("Deal_8")
+    shinyjs::enable("Deal_9")
+
+
+}
+})
+
+
 observe({
   #Amount damage should be the only thing triggering this
 
