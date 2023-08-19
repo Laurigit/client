@@ -30,24 +30,19 @@
                                                 "Martin Mulligan",
                                                 icon = icon("undo"),
                                                 style = "color: #fff; background-color: #b73338; border-color: #2e6da4"))),
-                fluidRow(column(4, uiOutput("mulliganiSlideriLauri")),
+                fluidRow(column(3, uiOutput("mulliganiSlideriLauri")),
                          column(4, actionButton("start_life_counter", "Start new lifecounter game")),
-                         column(4, uiOutput("mulliganiSlideriMartti"))),
-                width = NULL,
-                collapsible = TRUE),
-            fluidRow(column(2, actionButton("lauri_voitti","Lauri won")),
-
-                     column(offset = 2, 4, textOutput("peliKesto"),    tags$head(tags$style("#peliKesto{color: red;
+                         column(offset = 0, 2, textOutput("peliKesto"),    tags$head(tags$style("#peliKesto{color: red;
                                  font-size: 20px;
                                  font-style: bold;
                                  }"
-                     )
-                     )
-                     ),
+                         )
+                         )
+                         ),
+                         column(3, uiOutput("mulliganiSlideriMartti"))),
+                width = NULL,
+                collapsible = TRUE),
 
-
-
-                     column(4, actionButton("martti_voitti","Martti won"))),
             #fluidRow(box(HTML(       '<font size="7" color="red">  This is some t1ext!</font></body>')),
            # fluidRow(box(HTML('<div align="center"><font size="40" color="white"> <b>20</b></font></div'),
            #          background = "black")),

@@ -1149,12 +1149,14 @@ observe({
     slider_martin_lifet$value <-   life_totals$data$Lifetotal[Omistaja_NM == "Martti", Life_total]
     if (life_totals$data$Lifetotal[which.min(Life_total), Omistaja_NM] == "Lauri") {
 
-      click("martti_voitti")
+     # click("martti_voitti")
+      react_martti_voitti$value <- isolate(react_martti_voitti$value + 1)
       slider_vuoroarvio$value <- update_value
      # updateSliderInput(session,
     #                    inputId = "slider_vuoroarvio", value = update_value)
     } else {
-      click("lauri_voitti")
+      #click("lauri_voitti")
+      react_lauri_voitti$value <- isolate(react_lauri_voitti$value + 1)
       slider_vuoroarvio$value <- update_value
     #  updateSliderInput(session,
    #                     inputId = "slider_vuoroarvio", value = update_value)

@@ -373,10 +373,10 @@ observeEvent(input$martin_virhe_uusipeli,{
 })
 
 #lauri voitto globaali
-observeEvent(input$lauri_voitti,{
-
-  react_lauri_voitti$value <- input$lauri_voitti
-  }, ignoreNULL = TRUE, ignoreInit = TRUE)
+# observeEvent(input$lauri_voitti,{
+#
+#   react_lauri_voitti$value <- input$lauri_voitti
+#   }, ignoreNULL = TRUE, ignoreInit = TRUE)
 observe({
   if (react_lauri_voitti$value > 0 ) {
   #print("lauri voitti value updated")
@@ -388,11 +388,11 @@ observe({
 })
 
 #martti voitti globaali
-observeEvent(input$martti_voitti,{
-
-
-  react_martti_voitti$value <- input$martti_voitti
-}, ignoreNULL = TRUE, ignoreInit = TRUE)
+# observeEvent(input$martti_voitti,{
+#
+#
+#   react_martti_voitti$value <- input$martti_voitti
+# }, ignoreNULL = TRUE, ignoreInit = TRUE)
 
 observe({
 
