@@ -8,7 +8,7 @@ tabItem(tabName = "tab_custom_tournament",
             column(3, radioButtons("activate_custom", "Activate custom tournament", choices = c("inactive", "active"), selected = "inactive"))
           ),
           fluidRow(column(4, actionButton("tallenna_tulos_voittaja", "Tallenna tulos")),
-                    column(4,      radioButtons("voittaja_custom", "Voittaja", selected = "ei_pelattu", choiceNames  = c("vasen", "oikea", "ei_pelattu"), choiceValues  = c(0, 1, NA)))),
+                    column(4,      radioButtons("voittaja_custom", "Voittaja", selected = "ei_pelattu", choiceNames  = c("vasen", "oikea", "tasuri", "ei_pelattu"), choiceValues  = c(-1, 1, 0, NA)))),
           fluidRow(
                    column(3, uiOutput("matchup_tilanne")),
                    column(3, uiOutput("vasen_pelaaja_custom")),

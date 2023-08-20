@@ -49,8 +49,8 @@ output$matchup_tilanne <- renderUI({
   matchup_data <- STG_CUSTOM_TOURNAMENT$data[match_id == nykyinen_match_up]
   vas_name <- matchup_data[, .N, by = vasen][, vasen]
   oik_name <- matchup_data[, .N, by = oikea][, oikea]
-  vas_voitot <- matchup_data[voittaja == 0, .N]
-  oik_voitot <- matchup_data[voittaja == 1, .N]
+ # vas_voitot <- matchup_data[voittaja == -1, .N]
+#  oik_voitot <- matchup_data[voittaja == 1, .N]
   boksiteksti <- paste0(vas_voitot, "-", oik_voitot)
 
   box(HTML(paste0('<div align="center"><font size="7" color="white"> <b>',
@@ -59,19 +59,95 @@ output$matchup_tilanne <- renderUI({
                                    background = "purple",
                                    width = NULL)
 
-  if (vas_voitot == 2 | oik_voitot == 2) {
-    #find to be deleted game_id
-    delete_game_id <- matchup_data[, max(game_id)]
-    dbFetch(dbSendQuery(con, paste0("DELETE FROM CUSTOM_TOURNAMENT WHERE game_id = ", delete_game_id)))
+
+
+})
+
+observe({
+  #tämä vaan tuhoo 2-0:n jälkeen ylimääräsen rivin
+  #1. onko keskenerästä peliä
+  #edellinen pelattu peli
+  edellinen_pleattu <-   STG_CUSTOM_TOURNAMENT$data[!is.na(voittaja), max(game_id)]
+  nykyinen_match_up <- STG_CUSTOM_TOURNAMENT$data[game_id == edellinen_pleattu, match_id]
+  matchupdata <- STG_CUSTOM_TOURNAMENT$data[match_id == nykyinen_match_up]
+  peleja_pelattu <- matchupdata[, .N]
+
+  if (peleja_pelattu == 2) {
+     if (abs(matchupdata[, sum(voittaja)]) == 2) {
+       #rivi tuhotaan. Mikä rivi?
+       tuhoa_game_id <- matchupdata[nth_game_of_match == 3, game_id]
+
+         #find to be deleted game_id
+         delete_game_id <- matchup_data[, max(game_id)]
+         dbFetch(dbSendQuery(con, paste0("DELETE FROM CUSTOM_TOURNAMENT WHERE game_id = ", delete_game_id)))
+
+     }
   }
 
 })
-output$vasen_pelaaja_custom <- renderUI({
 
+
+sarjataulukko <- reactive({
+
+
+
+  if (nrow(STG_CUSTOM_TOURNAMENT$data) > 1) {
+  aggr_over_bo3 <- copy(STG_CUSTOM_TOURNAMENT$data)[!is.na(voittaja), .(pelatut_pelit = .N, sum_voitot = sum(voittaja)), by = .(vasen, oikea, match_id)]
+  aggr_over_bo3[, BO_voittaja := ifelse(sum_voitot < 0, -1,
+                                        ifelse(sum_voitot > 0, 1, 0))]
+
+ vasurivoitot <- aggr_over_bo3[BO_voittaja == -1, .(Wins = .N), by = .(Player = vasen)]
+ oikee_voitot <- aggr_over_bo3[BO_voittaja == 1, .(Wins = .N), by = .(Player = oikea)]
+ tasurit <-  aggr_over_bo3[BO_voittaja == 0, .(Draw = .N), by = .(Player = oikea)]
+ tasurit_vasen <-  aggr_over_bo3[BO_voittaja == 0, .(Draw = .N), by = .(Player = vasen)]
+ vasuritappio <- aggr_over_bo3[BO_voittaja == 1, .(Lost = .N), by = .(Player = vasen)]
+ oikee_tappio <- aggr_over_bo3[BO_voittaja == -1, .(Lost = .N), by = .(Player = oikea)]
+ bindwin <- rbind(vasurivoitot, oikee_voitot)[, .(type = "Wins", sum = sum(Wins)), by = Player]
+ bindlost <- rbind(vasuritappio, oikee_tappio)[, .(type = "Lost", sum = sum(Lost)), by = Player]
+ binddraw <- rbind(tasurit, tasurit_vasen)[, .(type = "Draw", sum = sum(Draw)), by = Player]
+ tasuridummy <- data.table(Player = "Tasuri", type = "Draw", sum = 1)
+ bindall <- rbind(bindwin, bindlost, binddraw, tasuridummy)
+ dcasti <- dcast.data.table(bindall, Player ~ type, fun.aggregate = sum, value.var = "sum")
+ dcasti[is.na(dcasti)] <- 0
+ remove_dummy <- dcasti[Player != "Tasuri", .(Player, Wins, Lost, Draw, Stats = paste0(Wins, "-", Lost, "-", Draw))]
+ remove_dummy
+  }
+})
+
+output$vasen_pelaaja_custom <- renderUI({
+  seuraava_peli <-   STG_CUSTOM_TOURNAMENT$data[is.na(voittaja), min(game_id)]
+  nykyinen_match_up <- STG_CUSTOM_TOURNAMENT$data[game_id == seuraava_peli, match_id]
+  matchup_data <- STG_CUSTOM_TOURNAMENT$data[match_id == nykyinen_match_up]
+  vas_name <- matchup_data[, .N, by = vasen][, vasen]
+
+  vas_stats <- sarjataulukko()[Player == vas_name, Stats]
+
+
+  boksiteksti <- paste0(vas_name, " ", vas_stats)
+
+  box(HTML(paste0('<div align="center"><font size="7" color="white"> <b>',
+                  boksiteksti,
+                  '</b></font></div>')),
+      background = "purple",
+      width = NULL)
 
 })
 output$oikea_pelaaja_custom <- renderUI({
+  seuraava_peli <-   STG_CUSTOM_TOURNAMENT$data[is.na(voittaja), min(game_id)]
+  nykyinen_match_up <- STG_CUSTOM_TOURNAMENT$data[game_id == seuraava_peli, match_id]
+  matchup_data <- STG_CUSTOM_TOURNAMENT$data[match_id == nykyinen_match_up]
+  oik_name <- matchup_data[, .N, by = oikea][, oikea]
 
+  oik_stats <- sarjataulukko()[Player == oik_name, Stats]
+
+
+  boksiteksti <- paste0(oik_name, " ", oik_stats)
+
+  box(HTML(paste0('<div align="center"><font size="7" color="white"> <b>',
+                  boksiteksti,
+                  '</b></font></div>')),
+      background = "purple",
+      width = NULL)
 
 })
 output$matchuptimer <- renderUI({
