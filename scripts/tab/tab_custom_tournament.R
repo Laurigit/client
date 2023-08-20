@@ -10,6 +10,7 @@ observe({
 
 
 observeEvent(input$aloita_custom,{
+  req(STG_CUSTOM_TOURNAMENT$data)
 click("start_life_counter")
   updateRadioButtons(session,"voittaja_custom",selected = NA)
   seuraava_peli <-   STG_CUSTOM_TOURNAMENT$data[is.na(voittaja), min(game_id)]
@@ -36,8 +37,12 @@ boksiteksti
 })
 
 observeEvent(input$tallenna_tulos_voittaja,{
+  req(STG_CUSTOM_TOURNAMENT$data)
+
+  req(input$voittaja_custom)
   seuraava_peli <-   STG_CUSTOM_TOURNAMENT$data[is.na(voittaja), min(game_id)]
   seuraava_peli_rivi <- STG_CUSTOM_TOURNAMENT$data[game_id == seuraava_peli]
+
   dbFetch(dbSendQuery(con, paste0("UPDATE CUSTOM_TOURNAMENT SET voittaja = ", input$voittaja_custom, " WHERE game_id = ", seuraava_peli_rivi[, game_id])))
   updateRadioButtons(session, "aloittaja_custom", selected = -1)
 
@@ -93,20 +98,26 @@ observe({
   #tämä vaan tuhoo 2-0:n jälkeen ylimääräsen rivin
   #1. onko keskenerästä peliä
   #edellinen pelattu peli
+
+  #DEPEND
+  input$tallenna_tulos_voittaja
+  ##############
+
   edellinen_pleattu <-   STG_CUSTOM_TOURNAMENT$data[!is.na(voittaja), max(game_id)]
   nykyinen_match_up <- STG_CUSTOM_TOURNAMENT$data[game_id == edellinen_pleattu, match_id]
   matchupdata <- STG_CUSTOM_TOURNAMENT$data[match_id == nykyinen_match_up]
-  peleja_pelattu <- matchupdata[, .N]
+  peleja_pelattu <- matchupdata[!is.na(voittaja), .N]
 
   if (peleja_pelattu == 2) {
-     if (abs(matchupdata[, sum(voittaja)]) == 2) {
+     if (abs(matchupdata[!is.na(voittaja), sum(voittaja)]) == 2) {
        #rivi tuhotaan. Mikä rivi?
        tuhoa_game_id <- matchupdata[nth_game_of_match == 3, game_id]
 
+      if (length(tuhoa_game_id) > 0) {
          #find to be deleted game_id
-         delete_game_id <- matchup_data[, max(game_id)]
-         dbFetch(dbSendQuery(con, paste0("DELETE FROM CUSTOM_TOURNAMENT WHERE game_id = ", delete_game_id)))
-
+        # delete_game_id <- matchupdata[, max(game_id)]
+         dbFetch(dbSendQuery(con, paste0("DELETE FROM CUSTOM_TOURNAMENT WHERE game_id = ", tuhoa_game_id)))
+      }
      }
   }
 
@@ -116,12 +127,13 @@ observe({
 sarjataulukko <- reactive({
 
 
-
   if (nrow(STG_CUSTOM_TOURNAMENT$data) > 1) {
-  aggr_over_bo3 <- copy(STG_CUSTOM_TOURNAMENT$data)[!is.na(voittaja), .(pelatut_pelit = .N, sum_voitot = sum(voittaja)), by = .(vasen, oikea, match_id)]
-  aggr_over_bo3[, BO_voittaja := ifelse(sum_voitot < 0, -1,
-                                        ifelse(sum_voitot > 0, 1, 0))]
 
+  aggr_over_bo3_raw <- copy(STG_CUSTOM_TOURNAMENT$data)[!is.na(voittaja), .(pelatut_pelit = .N, sum_voitot = sum(voittaja)), by = .(vasen, oikea, match_id)]
+  aggr_over_bo3_raw[, BO_voittaja := ifelse(sum_voitot < 0, -1,
+                                        ifelse(sum_voitot > 0, 1, 0))]
+  aggr_over_bo3_raw[, is_completed := ifelse((abs(sum_voitot) == 2 & pelatut_pelit == 2) |  pelatut_pelit == 3, 1, 0)]
+  aggr_over_bo3 <- aggr_over_bo3_raw[is_completed == TRUE]
  vasurivoitot <- aggr_over_bo3[BO_voittaja == -1, .(Wins = .N), by = .(Player = vasen)]
  oikee_voitot <- aggr_over_bo3[BO_voittaja == 1, .(Wins = .N), by = .(Player = oikea)]
  tasurit <-  aggr_over_bo3[BO_voittaja == 0, .(Draw = .N), by = .(Player = oikea)]
@@ -135,7 +147,7 @@ sarjataulukko <- reactive({
  bindall <- rbind(bindwin, bindlost, binddraw, tasuridummy)
  dcasti <- dcast.data.table(bindall, Player ~ type, fun.aggregate = sum, value.var = "sum")
  dcasti[is.na(dcasti)] <- 0
- remove_dummy <- dcasti[Player != "Tasuri", .(Player, Wins, Lost, Draw, Stats = paste0(Wins, "-", Lost, "-", Draw))]
+ remove_dummy <- dcasti[Player != "Tasuri", .(Player, Score = Wins * 3 + Draw, Wins, Lost, Draw, Stats = paste0(Wins, "-", Lost, "-", Draw))][order(-Score)]
  remove_dummy
   }
 })
@@ -159,8 +171,8 @@ isolate(react_custom_tournament$voittaja <- input$voittaja_custom)
 }, ignoreNULL = TRUE)
 
 observe({
-print("TÄÄL")
-  print(react_custom_tournament$voittaja)
+
+#  print(react_custom_tournament$voittaja)
   updateRadioButtons(session, "voittaja_custom", selected = react_custom_tournament$voittaja)
 
 })
@@ -271,3 +283,20 @@ output$matchuptimer <- renderUI({
       width = NULL)
 
 })
+
+output$sarjataulukko <- renderDataTable({
+  #DEPENDENCY
+  input$tallenna_tulos_voittaja
+  ########################
+  sarjataulukko()[, .(Player, Score, Stats)]
+
+}, options = list(
+  searching = FALSE,
+  #scrollY = "400px",
+  scrollX = FALSE,
+  lengthChange = FALSE,
+  paging = FALSE,
+  bInfo =  FALSE
+),
+rownames = FALSE
+)

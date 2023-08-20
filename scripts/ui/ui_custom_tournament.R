@@ -14,7 +14,8 @@ tabItem(tabName = "tab_custom_tournament",
                    column(3, uiOutput("vasen_pelaaja_custom")),
                    column(3, uiOutput("oikea_pelaaja_custom")),
                    column(3, uiOutput("matchuptimer"))
-                   )
+                   ),
+          fluidRow( column(3, dataTableOutput("sarjataulukko")))
           )
         )
 
