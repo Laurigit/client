@@ -38,6 +38,7 @@ uusi_peli <- dashboardBody(
    source("./scripts/ui/ui_uusi_peli.R",local = TRUE)$value,
    source("./scripts/ui/ui_tallenna_peli.R",local = TRUE)$value,
   source("./scripts/ui/ui_life_counter.R",local = TRUE)$value,
+  source("./scripts/ui/ui_custom_tournament.R",local = TRUE)$value,
   source("./scripts/ui/ui_overlay.R",local = TRUE)$value
 
 
@@ -49,9 +50,10 @@ uusi_peli <- dashboardBody(
 #SIDEBAR
 sidebar <- dashboardSidebar(
   sidebarMenu(id = "sidebarmenu",
-              menuItem("Uusi peli", tabName = "tab_uusi_peli", icon = icon("gamepad")),
-              menuItem("Tallenna peli", icon = icon("hdd"), tabName = "tab_tallenna_peli"),
+              menuItem("New game", tabName = "tab_uusi_peli", icon = icon("gamepad")),
+              menuItem("Save game", icon = icon("hdd"), tabName = "tab_tallenna_peli"),
               menuItem("LifeCounter", tabName = "tab_LifeCounter", icon = icon("gamepad")),
+              menuItem("Custom tournament", tabName = "tab_custom_tournament", icon = icon("gamepad")),
               menuItem("Overlay", icon = icon("server"), tabName = "tab_overlay"),
 
               # actionButton("automated_tests", label = h5("Run tests")),

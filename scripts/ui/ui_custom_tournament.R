@@ -1,0 +1,20 @@
+#ui_custome_tournament
+tabItem(tabName = "tab_custom_tournament",
+        fluidPage(
+          fluidRow(
+            column(3, actionButton("aloita_custom", label = "Start game")),
+            column(3, radioButtons("aloittaja_custom", "Aloittaja", choices = c("vasen", "oikea"))),
+            column(3, textOutput("matchup_text")),
+            column(3, radioButtons("activate_custom", "Activate custom tournament", choices = c("inactive", "active"), selected = "inactive"))
+          ),
+          fluidRow(column(4, actionButton("tallenna_tulos_voittaja", "Tallenna tulos")),
+                    column(4,      radioButtons("voittaja_custom", "Voittaja", selected = "ei_pelattu", choiceNames  = c("vasen", "oikea", "ei_pelattu"), choiceValues  = c(0, 1, NA)))),
+          fluidRow(
+                   column(3, uiOutput("matchup_tilanne")),
+                   column(3, uiOutput("vasen_pelaaja_custom")),
+                   column(3, uiOutput("oikea_pelaaja_custom")),
+                   column(3, uiOutput("matchuptimer"))
+                   )
+          )
+        )
+
