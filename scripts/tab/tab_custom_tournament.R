@@ -11,7 +11,7 @@ observe({
 
 observeEvent(input$aloita_custom,{
 click("start_life_counter")
-  updateRadioButtons(session,"voittaja_custom",selected = -1)
+  updateRadioButtons(session,"voittaja_custom",selected = NA)
   seuraava_peli <-   STG_CUSTOM_TOURNAMENT$data[is.na(voittaja), min(game_id)]
   seuraava_peli_rivi <- STG_CUSTOM_TOURNAMENT$data[game_id == seuraava_peli]
   stamppi <-  as.character(now(tz = "EET"))
@@ -39,6 +39,7 @@ observeEvent(input$tallenna_tulos_voittaja,{
   seuraava_peli <-   STG_CUSTOM_TOURNAMENT$data[is.na(voittaja), min(game_id)]
   seuraava_peli_rivi <- STG_CUSTOM_TOURNAMENT$data[game_id == seuraava_peli]
   dbFetch(dbSendQuery(con, paste0("UPDATE CUSTOM_TOURNAMENT SET voittaja = ", input$voittaja_custom, " WHERE game_id = ", seuraava_peli_rivi[, game_id])))
+  updateRadioButtons(session, "aloittaja_custom", selected = -1)
 
 })
 
@@ -49,9 +50,10 @@ output$matchup_tilanne <- renderUI({
   matchup_data <- STG_CUSTOM_TOURNAMENT$data[match_id == nykyinen_match_up]
   vas_name <- matchup_data[, .N, by = vasen][, vasen]
   oik_name <- matchup_data[, .N, by = oikea][, oikea]
- # vas_voitot <- matchup_data[voittaja == -1, .N]
-#  oik_voitot <- matchup_data[voittaja == 1, .N]
-  boksiteksti <- paste0(vas_voitot, "-", oik_voitot)
+  vas_voitot <- matchup_data[voittaja == -1, .N]
+  oik_voitot <- matchup_data[voittaja == 1, .N]
+  tasurit <- matchup_data[voittaja == 0, .N] / 2
+  boksiteksti <- paste0(vas_voitot + tasurit, "-", oik_voitot + tasurit)
 
   box(HTML(paste0('<div align="center"><font size="7" color="white"> <b>',
                   boksiteksti,
@@ -61,6 +63,30 @@ output$matchup_tilanne <- renderUI({
 
 
 
+})
+
+observe({
+  #minä vahdin, mitä nappuloita saa painaa
+  #eti peli, jossa timestamp, muttei tulosta
+  peleja_kesken <-   STG_CUSTOM_TOURNAMENT$data[is.na(voittaja) & timestamp != "", .N]
+
+if (input$activate_custom == 1) {
+  if (peleja_kesken == 1) {
+    shinyjs::disable("aloita_custom")
+    shinyjs::enable("tallenna_tulos_voittaja")
+  } else {
+    alottaja_valittu <- input$aloittaja_custom != -1
+    if ( alottaja_valittu == TRUE) {
+      shinyjs::enable("aloita_custom")
+    } else {
+      shinyjs::disable("aloita_custom")
+    }
+    shinyjs::disable("tallenna_tulos_voittaja")
+  }
+} else {
+  shinyjs::disable("aloita_custom")
+  shinyjs::disable("tallenna_tulos_voittaja")
+}
 })
 
 observe({
@@ -113,6 +139,68 @@ sarjataulukko <- reactive({
  remove_dummy
   }
 })
+
+
+#monitoroi nappuoloita
+observeEvent(input$activate_custom, {
+  isolate(react_custom_tournament$data <- input$activate_custom)
+
+}, ignoreNULL = TRUE)
+observe({
+  updateRadioButtons(session, "activate_custom", selected = react_custom_tournament$data)
+
+})
+
+
+
+observeEvent(input$voittaja_custom, {
+isolate(react_custom_tournament$voittaja <- input$voittaja_custom)
+
+}, ignoreNULL = TRUE)
+
+observe({
+print("TÄÄL")
+  print(react_custom_tournament$voittaja)
+  updateRadioButtons(session, "voittaja_custom", selected = react_custom_tournament$voittaja)
+
+})
+
+
+
+observeEvent(input$aloittaja_custom, {
+  isolate(react_custom_tournament$aloittaja <- input$aloittaja_custom)
+  if (react_custom_tournament$aloittaja != -1) {
+  #etsi matchuppi, jossa aloittaja oikein
+
+  copi <- copy(STG_PELISTATSIT$data[, .(Omistaja_ID, Peli_ID, Aloittaja, Pakka_NM, Ottelu_ID)][order(Ottelu_ID, Peli_ID, Omistaja_ID)])
+  copi[, eka_peli_id := min(Peli_ID), by = Ottelu_ID]
+  keep_min <- copi[eka_peli_id == Peli_ID]
+  vasen_alottaa_peli_id <- keep_min[Omistaja_ID  == "M" & Aloittaja == 0][1, Peli_ID]
+  oikea_aloittaa_peli_id <-  keep_min[Omistaja_ID  == "M" & Aloittaja == 1][1, Peli_ID]
+  #keep_min[Peli_ID %in% c(vasen_alottaa_peli_id, oikea_aloittaa_peli_id)]
+
+  if (react_custom_tournament$aloittaja == 0) {
+    vasen_pakka <- STG_PAKAT[Pakka_NM == keep_min[Peli_ID == oikea_aloittaa_peli_id & Omistaja_ID == "L", Pakka_NM], Pakka_ID]
+    oikea_pakka <- STG_PAKAT[Pakka_NM == keep_min[Peli_ID == oikea_aloittaa_peli_id & Omistaja_ID == "M", Pakka_NM], Pakka_ID]
+  } else if (react_custom_tournament$aloittaja == 1) {
+    vasen_pakka <- STG_PAKAT[Pakka_NM == keep_min[Peli_ID == vasen_alottaa_peli_id & Omistaja_ID == "L", Pakka_NM], Pakka_ID]
+    oikea_pakka <- STG_PAKAT[Pakka_NM == keep_min[Peli_ID == vasen_alottaa_peli_id & Omistaja_ID == "M", Pakka_NM], Pakka_ID]
+  }
+
+  updateSelectInput(session,
+                    inputId = "select_laurin_pakka", selected = vasen_pakka)
+  updateSelectInput(session,
+                    inputId = "select_martin_pakka", selected = oikea_pakka)
+
+}
+
+}, ignoreNULL = TRUE)
+observe({
+  updateRadioButtons(session, "aloittaja_custom", selected = react_custom_tournament$aloittaja)
+
+})
+
+
 
 output$vasen_pelaaja_custom <- renderUI({
   seuraava_peli <-   STG_CUSTOM_TOURNAMENT$data[is.na(voittaja), min(game_id)]

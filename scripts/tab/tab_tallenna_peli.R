@@ -381,9 +381,9 @@ observe({
   if (react_lauri_voitti$value > 0 ) {
   #print("lauri voitti value updated")
     if (session$user != "overlay") {
-      if (input$activate_custom == "active") {
+      if (isolate(input$activate_custom == 1)) {
         updateTabItems(session,"sidebarmenu","tab_custom_tournament")
-        updateRadioButtons(session,"voittaja_custom",selected = 0)
+        updateRadioButtons(session,"voittaja_custom",selected = -1)
       } else {
 
         updateTabItems(session,"sidebarmenu","tab_tallenna_peli")
@@ -406,12 +406,12 @@ observe({
 
   if (react_martti_voitti$value > 0 ) {
     if (session$user != "overlay") {
-      if (input$activate_custom == "active") {
+      if (isolate(input$activate_custom == 1)) {
         updateTabItems(session,"sidebarmenu","tab_custom_tournament")
-        updateRadioButtons(session,"voittaja_custom",selected = 1)
+        updateRadioButtons(session,"voittaja_custom", selected = 1)
       } else {
         updateTabItems(session,"sidebarmenu","tab_tallenna_peli")
-        updateRadioButtons(session,"radio_voittaja",selected = 1)
+        updateRadioButtons(session,"radio_voittaja", selected = 1)
     }
 
     }

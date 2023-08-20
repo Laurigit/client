@@ -37,6 +37,10 @@ select_martin_pakka <- reactiveValues(value = NULL)
 react_lauri_voitti<- reactiveValues(value = 0)
 react_martti_voitti <- reactiveValues(value = 0)
 
+#CUSTOM TOUR
+react_custom_tournament <- reactiveValues(value = 0, aloittaja = -1, voittaja = NA)
+
+
 keymap <- reactiveValues(data  = data.table(Nappain	= c("a", "b"),
                                             set_env = c("normal", "normal"),
                                             env = c("normal", "normal"),
