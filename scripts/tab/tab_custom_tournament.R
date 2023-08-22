@@ -187,8 +187,8 @@ observeEvent(input$aloittaja_custom, {
   copi <- copy(STG_PELISTATSIT$data[, .(Omistaja_ID, Peli_ID, Aloittaja, Pakka_NM, Ottelu_ID)][order(Ottelu_ID, Peli_ID, Omistaja_ID)])
   copi[, eka_peli_id := min(Peli_ID), by = Ottelu_ID]
   keep_min <- copi[eka_peli_id == Peli_ID]
-  vasen_alottaa_peli_id <- keep_min[Omistaja_ID  == "M" & Aloittaja == 0][1, Peli_ID]
-  oikea_aloittaa_peli_id <-  keep_min[Omistaja_ID  == "M" & Aloittaja == 1][1, Peli_ID]
+  vasen_alottaa_peli_id <- keep_min[Omistaja_ID  == "M" & Aloittaja == 1][1, Peli_ID]
+  oikea_aloittaa_peli_id <-  keep_min[Omistaja_ID  == "M" & Aloittaja == 0][1, Peli_ID]
   #keep_min[Peli_ID %in% c(vasen_alottaa_peli_id, oikea_aloittaa_peli_id)]
 
   if (react_custom_tournament$aloittaja == 0) {
