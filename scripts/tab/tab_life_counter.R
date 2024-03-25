@@ -541,24 +541,6 @@ observe({
 
 
 })
-#
-# output$debug_text <- renderText({
-#  resp <-  paste0("input_error_response: ", input_error$response, "\n",
-#          "waiting_opponent_input: ", waiting_opponent_input$waiting, "\n",
-#          "input_error: ", input_error$error, "\n",
-#          "turnData: ", turnData$turn, "\n",
-#          "complexInput: ", complex_input$amount, "\n",
-#          "inputLife: ", inputLife$amount
-#        #  "damage_data: ", damage_data$data, "\n"
-#          )
-#  print(resp)
-#  return(resp)
-#
-# })
-
-
-
-
 
 
 observe({
@@ -593,7 +575,7 @@ output$life_total_row <- renderUI({
 
             #  height: 100%;  background-color: #000080;
            # column(4,
-                  actionButton("ab_pakita_endille", HTML("Reject turn, <br> go to end step"),
+                  actionButton("ab_pakita_endille", HTML("Reject turn"),
                                width = '100%', style='font-size:150%;
                                color: #fff; padding:4px;
                                font-size: 6;

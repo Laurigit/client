@@ -287,7 +287,7 @@ tabItem(tabName = "tab_LifeCounter",
           column(2,
 
                  actionButton(inputId = "ab_Vaihda_vuoro_virhe",
-                              label = HTML("End turn <br> add mistake"),
+                              label = HTML("Not in use"),
                               style = "font-size:150%; color: #fff; background-color: #000080; border-color: #2e6da4; height: 87px;",
                               width = '100%')
           ),
