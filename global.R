@@ -109,6 +109,23 @@ if (!file.exists("./www/waiting.gif")) {
 file.copy(from = "./external_files/waiting.gif", to = './www/waiting.gif',copy.mode = TRUE)
 }
 
+# File path of the source file
+source_file <- "./beep.js"
+
+# File path of the destination file
+destination_file <- "./www/beep.js"
+
+# Check if the destination file exists
+if (!file.exists(destination_file)) {
+  # Copy the source file to the destination
+  file.copy(source_file, destination_file)
+  cat("File copied successfully.\n")
+} else {
+  #  cat("Destination file already exists. File not copied.\n")
+}
+
+
+
 con <- connDB(con)
 
 print("Global.R valmis")
