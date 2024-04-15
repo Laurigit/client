@@ -321,6 +321,13 @@ output$Username <- renderText({
   session$user
 })
 
+observeEvent(session$user, {
+  if (session$user != "overlay" & turnData$turn > 1) {
+    updateTabItems(session, "sidebarmenu", "tab_LifeCounter")
+  }
+})
+
+
 #tätä voi käyttää, jos haluaa tallentaa inputtien arvot.
 # observeEvent(input$arvo_peli,{
 # input_values <<- lapply(reactiveValuesToList(input), unclass)
