@@ -349,6 +349,10 @@ observe({
 #################### KOPIPASTETTU. TEE MUUTOKSET MOLEMPIIN#
 output$EV_plot <- renderPlot({
 
+  #DEPS######
+  eR_Peli_ID()
+  ##########
+
   melttaa_aggr <-  eR_UID_TURNAUS_EV()
   # required_data(c("ADM_PELIT", "STAT_VOITTOENNUSTE"))
   # melttaa_aggr <- UID_TURNAUS_EV(ADM_PELIT, STAT_VOITTOENNUSTE)
@@ -361,7 +365,9 @@ output$EV_plot <- renderPlot({
 
 })
 output$EV_plot_ovelary <- renderPlot({
-
+  #DEPS######
+  eR_Peli_ID()
+  ##########
   melttaa_aggr <-  eR_UID_TURNAUS_EV()
   # required_data(c("ADM_PELIT", "STAT_VOITTOENNUSTE"))
   # melttaa_aggr <- UID_TURNAUS_EV(ADM_PELIT, STAT_VOITTOENNUSTE)

@@ -134,7 +134,8 @@ aloittajaNo <- eR_Peli_Aloittaja$a
   #                           Aloitus_DT = as.POSIXct(uusrivi[, Aloitus_DT]))]
 }, ignoreNULL = TRUE, ignoreInit = TRUE)
 
-observe({
+observeEvent(STG_PELISTATSIT$data, {
+
   if (session$user != "overlay") {
   #print("tallenna_tulos_ui_update$value")
  # print(tallenna_tulos_ui_update$value)
